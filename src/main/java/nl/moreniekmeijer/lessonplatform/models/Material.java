@@ -18,13 +18,14 @@ public class Material {
     private String link;
     private String instrument;
 
-    // Probably from Style entity
-    private int style;
+    @ManyToOne
+    @JoinColumn(name = "styles_id")
+    private Style style;
 
     public Material() {
     }
 
-    public Material(Long id, String title, FileType fileType, String filePath, String link, String instrument, int style) {
+    public Material(Long id, String title, FileType fileType, String filePath, String link, String instrument, Style style) {
         this.id = id;
         this.title = title;
         this.fileType = fileType;
@@ -82,11 +83,11 @@ public class Material {
         this.instrument = instrument;
     }
 
-    public int getStyle() {
+    public Style getStyle() {
         return style;
     }
 
-    public void setStyle(int style) {
+    public void setStyle(Style style) {
         this.style = style;
     }
 }

@@ -2,6 +2,8 @@ package nl.moreniekmeijer.lessonplatform.models;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "styles")
 public class Style {
@@ -13,14 +15,27 @@ public class Style {
     private String origin;
     private String description;
 
+    @ManyToMany
+    @JoinTable(
+            name = "lessons_styles",
+            joinColumns = @JoinColumn(name = "styles_id"),
+            inverseJoinColumns = @JoinColumn(name = "lessons_id")
+    )
+    private List<Lesson> lessons;
+
+    @OneToMany(mappedBy = "style")
+    private List<Material> materials;
+
     public Style() {
     }
 
-    public Style(Long id, String name, String origin, String description) {
+    public Style(Long id, String name, String origin, String description, List<Lesson> lessons, List<Material> materials) {
         this.id = id;
         this.name = name;
         this.origin = origin;
         this.description = description;
+        this.lessons = lessons;
+        this.materials = materials;
     }
 
     public Long getId() {
@@ -53,5 +68,21 @@ public class Style {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(List<Lesson> lessons) {
+        this.lessons = lessons;
+    }
+
+    public List<Material> getMaterials() {
+        return materials;
+    }
+
+    public void setMaterials(List<Material> materials) {
+        this.materials = materials;
     }
 }
