@@ -14,7 +14,7 @@ public class Lesson {
     private Long id;
     private LocalDate scheduledDate;
 
-    @ManyToMany(mappedBy = "lesson")
+    @ManyToMany(mappedBy = "lessons")
     private List<Style> styles;
 
     public Lesson() {
