@@ -3,8 +3,6 @@ package nl.moreniekmeijer.lessonplatform.controllers;
 import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
-import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
-import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,5 +28,16 @@ public class MaterialController {
     @GetMapping
     public ResponseEntity<List<MaterialResponseDto>> getAllMaterials() {
         return ResponseEntity.ok(materialService.getAllMaterials());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MaterialResponseDto> getMaterialById(@PathVariable Long id) {
+        return ResponseEntity.ok(materialService.getMaterialById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMaterial(@PathVariable Long id) {
+        materialService.deleteMaterial(id);
+        return ResponseEntity.noContent().build();
     }
 }

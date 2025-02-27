@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,17 +13,24 @@ public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private LocalDate scheduledDate;
 
+    @Enumerated(EnumType.STRING)
+    private LessonStatus status;
+
     @ManyToMany(mappedBy = "lessons")
+    @NotEmpty(message = "A lesson must have at least one style")
     private List<Style> styles;
+
 
     public Lesson() {
     }
 
-    public Lesson(Long id, LocalDate scheduledDate, List<Style> styles) {
+    public Lesson(Long id, LocalDate scheduledDate, LessonStatus status, List<Style> styles) {
         this.id = id;
         this.scheduledDate = scheduledDate;
+        this.status = status;
         this.styles = styles;
     }
 
@@ -40,6 +48,14 @@ public class Lesson {
 
     public void setScheduledDate(LocalDate scheduledDate) {
         this.scheduledDate = scheduledDate;
+    }
+
+    public LessonStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(LessonStatus status) {
+        this.status = status;
     }
 
     public List<Style> getStyles() {

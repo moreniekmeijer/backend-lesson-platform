@@ -1,8 +1,8 @@
 package nl.moreniekmeijer.lessonplatform.models;
 
 public enum FileType {
-    Video,
-    Audio,
+    VIDEO,
+    AUDIO,
     PDF,
-    Link
+    LINK
 }
