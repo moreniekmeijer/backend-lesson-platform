@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
+import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,7 +24,8 @@ public class MaterialController {
     @PostMapping
     public ResponseEntity<MaterialResponseDto> addMaterial(@Valid @RequestBody MaterialInputDto materialInputDto) {
         MaterialResponseDto savedMaterial = materialService.addMaterial(materialInputDto);
-        return ResponseEntity.created(null).body(savedMaterial);
+        URI location = URIUtil.createResourceUri(savedMaterial.getId());
+        return ResponseEntity.created(location).body(savedMaterial);
     }
 
     @GetMapping

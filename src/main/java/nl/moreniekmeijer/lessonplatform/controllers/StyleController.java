@@ -4,9 +4,11 @@ import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
 import nl.moreniekmeijer.lessonplatform.services.StyleService;
+import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -14,17 +16,16 @@ import java.util.List;
 public class StyleController {
 
     private final StyleService styleService;
-    private final MaterialService materialService;
 
     public StyleController(StyleService styleService, MaterialService materialService) {
         this.styleService = styleService;
-        this.materialService = materialService;
     }
 
     @PostMapping
     public ResponseEntity<StyleResponseDto> addStyle(@RequestBody StyleInputDto styleInputDto) {
         StyleResponseDto savedStyle = styleService.addStyle(styleInputDto);
-        return ResponseEntity.created(null).body(savedStyle);
+        URI location = URIUtil.createResourceUri(savedStyle.getId());
+        return ResponseEntity.created(location).body(savedStyle);
     }
 
     @GetMapping
@@ -42,4 +43,6 @@ public class StyleController {
         styleService.deleteStyle(id);
         return ResponseEntity.noContent().build();
     }
+
+    //assignMaterialToStyle?
 }

@@ -15,6 +15,7 @@ public class Lesson {
     private Long id;
 
     private LocalDate scheduledDate;
+    private String notes;
 
     @Enumerated(EnumType.STRING)
     private LessonStatus status;
@@ -27,9 +28,10 @@ public class Lesson {
     public Lesson() {
     }
 
-    public Lesson(Long id, LocalDate scheduledDate, LessonStatus status, List<Style> styles) {
+    public Lesson(Long id, LocalDate scheduledDate, String notes, LessonStatus status, List<Style> styles) {
         this.id = id;
         this.scheduledDate = scheduledDate;
+        this.notes = notes;
         this.status = status;
         this.styles = styles;
     }
@@ -48,6 +50,14 @@ public class Lesson {
 
     public void setScheduledDate(LocalDate scheduledDate) {
         this.scheduledDate = scheduledDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public LessonStatus getStatus() {
