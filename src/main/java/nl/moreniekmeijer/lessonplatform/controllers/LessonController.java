@@ -18,16 +18,16 @@ public class LessonController {
         this.lessonService = lessonService;
     }
 
-    @PostMapping("/lessons/{styleIds}")
+    @PostMapping("/{styleNames}")
     public ResponseEntity<LessonResponseDto> createLesson(
-            @RequestBody LessonInputDto dto,
+            @RequestBody LessonInputDto lessonInputDto,
             @PathVariable List<String> styleNames) {
-        LessonResponseDto createdLesson = lessonService.createLesson(dto, styleNames);
+        LessonResponseDto createdLesson = lessonService.createLesson(lessonInputDto, styleNames);
         return ResponseEntity.ok(createdLesson);
     }
 
-    @GetMapping
-    public ResponseEntity<LessonResponseDto> getNextLesson() {
-
-    }
+//    @GetMapping
+//    public ResponseEntity<LessonResponseDto> getNextLesson() {
+//
+//    }
 }
