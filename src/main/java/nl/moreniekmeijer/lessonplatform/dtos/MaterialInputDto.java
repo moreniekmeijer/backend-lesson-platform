@@ -19,17 +19,20 @@ public class MaterialInputDto {
     @NotBlank(message = "Instrument is required")
     private String instrument;
 
+    private String category;
+
     private Long styleId;
 
     public MaterialInputDto() {
     }
 
-    public MaterialInputDto(String title, FileType fileType, String filePath, String link, String instrument, Long styleId) {
+    public MaterialInputDto(String title, FileType fileType, String filePath, String link, String instrument, String category, Long styleId) {
         this.title = title;
         this.fileType = fileType;
         this.filePath = filePath;
         this.link = link;
         this.instrument = instrument;
+        this.category = category;
         this.styleId = styleId;
     }
 
@@ -71,6 +74,14 @@ public class MaterialInputDto {
 
     public void setInstrument(String instrument) {
         this.instrument = instrument;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Long getStyleId() {

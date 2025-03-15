@@ -17,6 +17,7 @@ public class Material {
     private String filePath;
     private String link;
     private String instrument;
+    private String category;
 
     @ManyToOne
     @JoinColumn(name = "styles_id")
@@ -25,13 +26,14 @@ public class Material {
     public Material() {
     }
 
-    public Material(Long id, String title, FileType fileType, String filePath, String link, String instrument, Style style) {
+    public Material(Long id, String title, FileType fileType, String filePath, String link, String instrument, String category, Style style) {
         this.id = id;
         this.title = title;
         this.fileType = fileType;
         this.filePath = filePath;
         this.link = link;
         this.instrument = instrument;
+        this.category = category;
         this.style = style;
     }
 
@@ -81,6 +83,14 @@ public class Material {
 
     public void setInstrument(String instrument) {
         this.instrument = instrument;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Style getStyle() {
