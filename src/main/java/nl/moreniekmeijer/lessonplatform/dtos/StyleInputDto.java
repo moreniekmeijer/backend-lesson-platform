@@ -20,17 +20,6 @@ public class StyleInputDto {
 
     private List<Long> materialIds;
 
-    public StyleInputDto() {
-    }
-
-    public StyleInputDto(String name, String origin, String description, List<Long> lessonIds, List<Long> materialIds) {
-        this.name = name;
-        this.origin = origin;
-        this.description = description;
-        this.lessonIds = lessonIds;
-        this.materialIds = materialIds;
-    }
-
     public @NotBlank(message = "Name is required") String getName() {
         return name;
     }

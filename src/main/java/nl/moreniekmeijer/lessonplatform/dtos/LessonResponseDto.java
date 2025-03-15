@@ -6,14 +6,16 @@ import java.time.LocalDate;
 public class LessonResponseDto {
     private Long id;
     private LocalDate scheduledDate;
+    private String notes;
     private List<Long> styleIds;
 
     public LessonResponseDto() {
     }
 
-    public LessonResponseDto(Long id, LocalDate scheduledDate, List<Long> styleIds) {
+    public LessonResponseDto(Long id, LocalDate scheduledDate, String notes, List<Long> styleIds) {
         this.id = id;
         this.scheduledDate = scheduledDate;
+        this.notes = notes;
         this.styleIds = styleIds;
     }
 
@@ -31,6 +33,14 @@ public class LessonResponseDto {
 
     public void setScheduledDate(LocalDate scheduledDate) {
         this.scheduledDate = scheduledDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public List<Long> getStyleIds() {

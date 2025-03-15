@@ -23,19 +23,6 @@ public class MaterialInputDto {
 
     private Long styleId;
 
-    public MaterialInputDto() {
-    }
-
-    public MaterialInputDto(String title, FileType fileType, String filePath, String link, String instrument, String category, Long styleId) {
-        this.title = title;
-        this.fileType = fileType;
-        this.filePath = filePath;
-        this.link = link;
-        this.instrument = instrument;
-        this.category = category;
-        this.styleId = styleId;
-    }
-
     public String getTitle() {
         return title;
     }

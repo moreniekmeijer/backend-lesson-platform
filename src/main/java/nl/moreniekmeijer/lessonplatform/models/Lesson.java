@@ -17,8 +17,8 @@ public class Lesson {
     private LocalDate scheduledDate;
     private String notes;
 
-    @Enumerated(EnumType.STRING)
-    private LessonStatus status;
+//    @Enumerated(EnumType.STRING)
+//    private LessonStatus status;
 
     @ManyToMany(mappedBy = "lessons")
     @NotEmpty(message = "A lesson must have at least one style")
@@ -28,11 +28,10 @@ public class Lesson {
     public Lesson() {
     }
 
-    public Lesson(Long id, LocalDate scheduledDate, String notes, LessonStatus status, List<Style> styles) {
+    public Lesson(Long id, LocalDate scheduledDate, String notes, List<Style> styles) {
         this.id = id;
         this.scheduledDate = scheduledDate;
         this.notes = notes;
-        this.status = status;
         this.styles = styles;
     }
 
@@ -58,14 +57,6 @@ public class Lesson {
 
     public void setNotes(String notes) {
         this.notes = notes;
-    }
-
-    public LessonStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(LessonStatus status) {
-        this.status = status;
     }
 
     public List<Style> getStyles() {
