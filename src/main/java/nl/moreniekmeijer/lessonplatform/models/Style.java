@@ -23,7 +23,7 @@ public class Style {
     )
     private List<Lesson> lessons;
 
-    @OneToMany(mappedBy = "style")
+    @OneToMany(mappedBy = "style", cascade = CascadeType.ALL)
     private List<Material> materials;
 
     public Style() {

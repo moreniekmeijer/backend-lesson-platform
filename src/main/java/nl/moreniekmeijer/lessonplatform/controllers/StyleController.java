@@ -44,5 +44,9 @@ public class StyleController {
         return ResponseEntity.noContent().build();
     }
 
-    //assignMaterialToStyle?
+    @PutMapping("/{styleId}/materials/{materialId}")
+    public ResponseEntity<StyleResponseDto> assignMaterialToStyle(@PathVariable Long styleId, @PathVariable Long materialId) {
+        StyleResponseDto updatedStyle = styleService.assignMaterialToStyle(styleId, materialId);
+        return ResponseEntity.ok(updatedStyle);
+    }
 }
