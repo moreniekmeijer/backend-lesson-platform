@@ -21,19 +21,19 @@ public class MaterialInputDto {
 
     private String category;
 
-    private Long styleId;
+    private Long style_id;
 
     public MaterialInputDto() {
     }
 
-    public MaterialInputDto(String title, FileType fileType, String filePath, String link, String instrument, String category, Long styleId) {
+    public MaterialInputDto(String title, FileType fileType, String filePath, String link, String instrument, String category, Long style_id) {
         this.title = title;
         this.fileType = fileType;
         this.filePath = filePath;
         this.link = link;
         this.instrument = instrument;
         this.category = category;
-        this.styleId = styleId;
+        this.style_id = style_id;
     }
 
     public String getTitle() {
@@ -85,10 +85,10 @@ public class MaterialInputDto {
     }
 
     public Long getStyleId() {
-        return styleId;
+        return style_id;
     }
 
-    public void setStyleId(Long styleId) {
-        this.styleId = styleId;
+    public void setStyleId(Long style_id) {
+        this.style_id = style_id;
     }
 }

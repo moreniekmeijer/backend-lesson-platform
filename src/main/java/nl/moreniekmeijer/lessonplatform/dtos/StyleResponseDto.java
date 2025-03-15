@@ -1,5 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.dtos;
 
+import nl.moreniekmeijer.lessonplatform.models.Material;
+
 import java.util.List;
 
 public class StyleResponseDto {
@@ -8,19 +10,7 @@ public class StyleResponseDto {
     private String origin;
     private String description;
     private List<Long> lessonIds;
-    private List<Long> materialIds;
-
-    // Constructors
-    public StyleResponseDto() {}
-
-    public StyleResponseDto(Long id, String name, String origin, String description, List<Long> lessonIds, List<Long> materialIds) {
-        this.id = id;
-        this.name = name;
-        this.origin = origin;
-        this.description = description;
-        this.lessonIds = lessonIds;
-        this.materialIds = materialIds;
-    }
+    private List<MaterialResponseDto> materials;
 
     public Long getId() {
         return id;
@@ -62,11 +52,11 @@ public class StyleResponseDto {
         this.lessonIds = lessonIds;
     }
 
-    public List<Long> getMaterialIds() {
-        return materialIds;
+    public List<MaterialResponseDto> getMaterials() {
+        return materials;
     }
 
-    public void setMaterialIds(List<Long> materialIds) {
-        this.materialIds = materialIds;
+    public void setMaterials(List<MaterialResponseDto> materials) {
+        this.materials = materials;
     }
 }

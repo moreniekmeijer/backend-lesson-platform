@@ -16,13 +16,13 @@ public class StyleMapper {
     }
 
     public static StyleResponseDto toResponseDto(Style style) {
-        return new StyleResponseDto(
-                style.getId(),
-                style.getName(),
-                style.getOrigin(),
-                style.getDescription(),
-                style.getLessons() != null ? style.getLessons().stream().map(Lesson::getId).toList() : null,
-                style.getMaterials() != null ? style.getMaterials().stream().map(Material::getId).toList() : null
-        );
+        StyleResponseDto responseDto = new StyleResponseDto();
+        responseDto.setId(style.getId());
+        responseDto.setName(style.getName());
+        responseDto.setOrigin(style.getOrigin());
+        responseDto.setDescription(style.getDescription());
+        responseDto.setLessonIds(style.getLessons() != null ? style.getLessons().stream().map(Lesson::getId).toList() : null);
+        responseDto.setMaterials(style.getMaterials() != null ? style.getMaterials().stream().map(MaterialMapper::toResponseDto).toList() : null);
+        return responseDto;
     }
 }

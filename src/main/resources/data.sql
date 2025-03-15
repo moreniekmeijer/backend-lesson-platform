@@ -5,7 +5,7 @@ INSERT INTO styles (name, origin, description) VALUES
                                                    ('Makru', 'Africa', 'Traditional West African rhythm, commonly played on djembe and dunun drums.');
 
 -- Inserting some materials (videos, PDFs, links) related to styles
-INSERT INTO material (title, fileType, filePath, link, instrument, category, styleId) VALUES
+INSERT INTO material (title, file_type, file_path, link, instrument, category, styles_id) VALUES
                                                                                                           ('Breakdown of Maracatu', 'VIDEO', 'path/to/maracatu_breakdown.mp4', NULL, 'Surdo', 'Rhythm', 1),
                                                                                                           ('Maracatu Arrangement', 'PDF', 'path/to/maracatu_arrangement.pdf', NULL, 'Snare Drum', 'Sheet Music', 1),
                                                                                                           ('Surdo Rhythm for Samba', 'VIDEO', 'path/to/samba_surdo_rhythm.mp4', NULL, 'Surdo', 'Rhythm', 2),

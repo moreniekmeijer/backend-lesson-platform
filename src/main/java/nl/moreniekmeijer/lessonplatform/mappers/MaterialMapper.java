@@ -19,14 +19,15 @@ public class MaterialMapper {
     }
 
     public static MaterialResponseDto toResponseDto(Material material) {
-        return new MaterialResponseDto(
-                material.getId(),
-                material.getTitle(),
-                material.getFileType().name(),
-                material.getFilePath(),
-                material.getLink(),
-                material.getInstrument(),
-                material.getStyle() != null ? material.getStyle().getName() : null
-        );
+        MaterialResponseDto responseDto = new MaterialResponseDto();
+        responseDto.setId(material.getId());
+        responseDto.setTitle(material.getTitle());
+        responseDto.setFileType(material.getFileType());
+        responseDto.setFilePath(material.getFilePath());
+        responseDto.setLink(material.getLink());
+        responseDto.setInstrument(material.getInstrument());
+        responseDto.setCategory(material.getCategory());
+        responseDto.setStyleName(material.getStyle() != null ? material.getStyle().getName() : null);
+        return responseDto;
     }
 }

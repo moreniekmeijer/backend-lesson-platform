@@ -3,7 +3,7 @@ package nl.moreniekmeijer.lessonplatform.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table
+@Table(name = "material")
 public class Material {
 
     @Id
