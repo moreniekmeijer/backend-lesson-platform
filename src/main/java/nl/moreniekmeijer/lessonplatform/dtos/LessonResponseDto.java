@@ -1,5 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.dtos;
 
+import nl.moreniekmeijer.lessonplatform.models.Style;
+
 import java.util.List;
 import java.time.LocalDate;
 
@@ -7,17 +9,7 @@ public class LessonResponseDto {
     private Long id;
     private LocalDate scheduledDate;
     private String notes;
-    private List<Long> styleIds;
-
-    public LessonResponseDto() {
-    }
-
-    public LessonResponseDto(Long id, LocalDate scheduledDate, String notes, List<Long> styleIds) {
-        this.id = id;
-        this.scheduledDate = scheduledDate;
-        this.notes = notes;
-        this.styleIds = styleIds;
-    }
+    private List<Style> styles;
 
     public Long getId() {
         return id;
@@ -43,11 +35,11 @@ public class LessonResponseDto {
         this.notes = notes;
     }
 
-    public List<Long> getStyleIds() {
-        return styleIds;
+    public List<Style> getStyles() {
+        return styles;
     }
 
-    public void setStyleIds(List<Long> styleIds) {
-        this.styleIds = styleIds;
+    public void setStyles(List<Style> styles) {
+        this.styles = styles;
     }
 }

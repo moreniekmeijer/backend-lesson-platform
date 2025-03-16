@@ -5,6 +5,7 @@ import nl.moreniekmeijer.lessonplatform.dtos.LessonResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,8 +24,9 @@ public class LessonMapper {
         dto.setScheduledDate(lesson.getScheduledDate());
         dto.setNotes(lesson.getNotes());
         if (lesson.getStyles() != null) {
-            dto.setStyleIds(lesson.getStyles().stream().map(Style::getId).toList());
+            dto.setStyles(new ArrayList<>(lesson.getStyles())); // Kan niet! Infinity loop, want children...
         }
         return dto;
     }
+
 }

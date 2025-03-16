@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class Style {
             joinColumns = @JoinColumn(name = "styles_id"),
             inverseJoinColumns = @JoinColumn(name = "lessons_id")
     )
+    @JsonIgnore
     private List<Lesson> lessons;
 
     @OneToMany(mappedBy = "style", cascade = CascadeType.ALL)

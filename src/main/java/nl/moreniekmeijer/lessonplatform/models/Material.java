@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,6 +22,7 @@ public class Material {
 
     @ManyToOne
     @JoinColumn(name = "styles_id")
+    @JsonIgnore
     private Style style;
 
     public Material() {
