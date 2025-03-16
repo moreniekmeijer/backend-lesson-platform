@@ -2,12 +2,12 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 
 import nl.moreniekmeijer.lessonplatform.models.Style;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.time.LocalDate;
 
 public class LessonResponseDto {
     private Long id;
-    private LocalDate scheduledDate;
+    private LocalDateTime scheduledDateTime;
     private String notes;
     private List<Style> styles;
 
@@ -19,12 +19,12 @@ public class LessonResponseDto {
         this.id = id;
     }
 
-    public LocalDate getScheduledDate() {
-        return scheduledDate;
+    public LocalDateTime getScheduledDateTime() {
+        return scheduledDateTime;
     }
 
-    public void setScheduledDate(LocalDate scheduledDate) {
-        this.scheduledDate = scheduledDate;
+    public void setScheduledDateTime(LocalDateTime scheduledDateTime) {
+        this.scheduledDateTime = scheduledDateTime;
     }
 
     public String getNotes() {

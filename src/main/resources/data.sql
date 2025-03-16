@@ -11,7 +11,7 @@ VALUES ('Breakdown of Maracatu', 'VIDEO', 'path/to/maracatu_breakdown.mp4', NULL
        ('Makru Drum Rhythms', 'VIDEO', 'path/to/makru_drum_rhythms.mp4', NULL, 'Djembe', 'Rhythm', 3),
        ('Cool Djembe Video', 'LINK', NULL, 'https://www.youtube.com/watch?v=cooldjembe', 'Djembe', 'Video', 3);
 
-INSERT INTO lessons (scheduled_date, notes)
+INSERT INTO lessons (scheduled_date_time, notes)
 VALUES ('2025-03-20T15:00:00', 'Let goed op deze notitie!');
 
 INSERT INTO lessons_styles (lessons_id, styles_id)

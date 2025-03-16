@@ -1,9 +1,10 @@
 package nl.moreniekmeijer.lessonplatform.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,7 +15,7 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate scheduledDate;
+    private LocalDateTime scheduledDateTime;
     private String notes;
 
 //    @Enumerated(EnumType.STRING)
@@ -24,13 +25,12 @@ public class Lesson {
     @NotEmpty(message = "A lesson must have at least one style")
     private List<Style> styles;
 
-
     public Lesson() {
     }
 
-    public Lesson(Long id, LocalDate scheduledDate, String notes, List<Style> styles) {
+    public Lesson(Long id, LocalDateTime scheduledDateTime, String notes, List<Style> styles) {
         this.id = id;
-        this.scheduledDate = scheduledDate;
+        this.scheduledDateTime = scheduledDateTime;
         this.notes = notes;
         this.styles = styles;
     }
@@ -43,12 +43,12 @@ public class Lesson {
         this.id = id;
     }
 
-    public LocalDate getScheduledDate() {
-        return scheduledDate;
+    public LocalDateTime getScheduledDateTime() {
+        return scheduledDateTime;
     }
 
-    public void setScheduledDate(LocalDate scheduledDate) {
-        this.scheduledDate = scheduledDate;
+    public void setScheduledDateTime(LocalDateTime scheduledDateTime) {
+        this.scheduledDateTime = scheduledDateTime;
     }
 
     public String getNotes() {

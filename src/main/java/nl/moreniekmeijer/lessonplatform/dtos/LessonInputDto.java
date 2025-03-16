@@ -3,12 +3,12 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class LessonInputDto {
     @NotNull(message = "Scheduled date is required")
-    private LocalDate scheduledDate;
+    private LocalDateTime scheduledDateTime;
     private String notes;
 
 //    @NotNull(message = "Status is required")
@@ -16,13 +16,15 @@ public class LessonInputDto {
 
     @NotEmpty(message = "A lesson must have at least one style")
     private List<Long> styleIds;
+    @NotEmpty(message = "A lesson must have at least one style")
+    private List<String> styleNames;
 
-    public @NotNull(message = "Scheduled date is required") LocalDate getScheduledDate() {
-        return scheduledDate;
+    public @NotNull(message = "Scheduled date is required") LocalDateTime getScheduledDateTime() {
+        return scheduledDateTime;
     }
 
-    public void setScheduledDate(@NotNull(message = "Scheduled date is required") LocalDate scheduledDate) {
-        this.scheduledDate = scheduledDate;
+    public void setScheduledDateTime(@NotNull(message = "Scheduled date is required") LocalDateTime scheduledDateTime) {
+        this.scheduledDateTime = scheduledDateTime;
     }
 
     public String getNotes() {
@@ -39,5 +41,13 @@ public class LessonInputDto {
 
     public void setStyleIds(List<Long> styleIds) {
         this.styleIds = styleIds;
+    }
+
+    public List<String> getStyleNames() {
+        return styleNames;
+    }
+
+    public void setStyleNames(List<String> styleNames) {
+        this.styleNames = styleNames;
     }
 }

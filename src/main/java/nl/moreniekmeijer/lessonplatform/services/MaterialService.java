@@ -31,13 +31,8 @@ public class MaterialService {
                     .orElseThrow(() -> new EntityNotFoundException("Style not found with id: " + materialInputDto.getStyleId()));
         }
 
-        // DTO omzetten naar entity
         Material material = MaterialMapper.toEntity(materialInputDto, style);
-
-        // Opslaan in de database
         Material savedMaterial = materialRepository.save(material);
-
-        // Omzetten naar Response DTO
         return MaterialMapper.toResponseDto(savedMaterial);
     }
 
