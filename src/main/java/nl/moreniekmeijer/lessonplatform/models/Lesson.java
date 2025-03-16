@@ -1,11 +1,8 @@
 package nl.moreniekmeijer.lessonplatform.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 @Entity

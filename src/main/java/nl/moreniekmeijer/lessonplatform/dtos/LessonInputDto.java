@@ -10,13 +10,7 @@ public class LessonInputDto {
     @NotNull(message = "Scheduled date is required")
     private LocalDateTime scheduledDateTime;
     private String notes;
-
-//    @NotNull(message = "Status is required")
-//    private LessonStatus status;
-
-    @NotEmpty(message = "A lesson must have at least one style") // NotEmpty is dubbelop.
     private List<Long> styleIds;
-    @NotEmpty(message = "A lesson must have at least one style")
     private List<String> styleNames;
 
     public @NotNull(message = "Scheduled date is required") LocalDateTime getScheduledDateTime() {

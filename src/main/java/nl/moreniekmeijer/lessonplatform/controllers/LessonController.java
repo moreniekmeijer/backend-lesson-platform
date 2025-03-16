@@ -25,9 +25,13 @@ public class LessonController {
         return ResponseEntity.ok(createdLesson);
     }
 
+    @GetMapping
+    public ResponseEntity<List<LessonResponseDto>> getAllLessons() {
+        return ResponseEntity.ok(lessonService.getAllLessons());
+    }
+
     @GetMapping("/next")
     public ResponseEntity<LessonResponseDto> getNextLesson() {
-        LessonResponseDto nextLesson = lessonService.getNextLesson();
-        return ResponseEntity.ok(nextLesson);
+        return ResponseEntity.ok(lessonService.getNextLesson());
     }
 }

@@ -37,8 +37,8 @@ public class MaterialService {
     }
 
     public List<MaterialResponseDto> getAllMaterials() {
-        List<Material> materials = materialRepository.findAll();
-        return materials.stream()
+        List<Material> foundMaterials = materialRepository.findAll();
+        return foundMaterials.stream()
                 .map(MaterialMapper::toResponseDto)
                 .toList();
     }
