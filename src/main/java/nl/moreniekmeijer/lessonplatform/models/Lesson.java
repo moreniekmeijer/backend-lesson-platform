@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "lessons")
@@ -23,12 +24,12 @@ public class Lesson {
 
     @ManyToMany(mappedBy = "lessons")
     @NotEmpty(message = "A lesson must have at least one style")
-    private List<Style> styles;
+    private Set<Style> styles;
 
     public Lesson() {
     }
 
-    public Lesson(Long id, LocalDateTime scheduledDateTime, String notes, List<Style> styles) {
+    public Lesson(Long id, LocalDateTime scheduledDateTime, String notes, Set<Style> styles) {
         this.id = id;
         this.scheduledDateTime = scheduledDateTime;
         this.notes = notes;
@@ -59,11 +60,11 @@ public class Lesson {
         this.notes = notes;
     }
 
-    public List<Style> getStyles() {
+    public Set<Style> getStyles() {
         return styles;
     }
 
-    public void setStyles(List<Style> styles) {
+    public void setStyles(Set<Style> styles) {
         this.styles = styles;
     }
 }

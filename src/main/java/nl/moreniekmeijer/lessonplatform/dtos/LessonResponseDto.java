@@ -3,13 +3,13 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 public class LessonResponseDto {
     private Long id;
     private LocalDateTime scheduledDateTime;
     private String notes;
-    private List<Style> styles;
+    private Set<Style> styles;
 
     public Long getId() {
         return id;
@@ -35,11 +35,11 @@ public class LessonResponseDto {
         this.notes = notes;
     }
 
-    public List<Style> getStyles() {
+    public Set<Style> getStyles() {
         return styles;
     }
 
-    public void setStyles(List<Style> styles) {
+    public void setStyles(Set<Style> styles) {
         this.styles = styles;
     }
 }

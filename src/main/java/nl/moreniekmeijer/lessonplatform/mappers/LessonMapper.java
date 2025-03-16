@@ -6,9 +6,10 @@ import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 
 import java.util.List;
+import java.util.Set;
 
 public class LessonMapper {
-    public static Lesson toEntity(LessonInputDto dto, List<Style> styles) {
+    public static Lesson toEntity(LessonInputDto dto, Set<Style> styles) {
         Lesson lesson = new Lesson();
         lesson.setScheduledDateTime(dto.getScheduledDateTime());
         lesson.setNotes(dto.getNotes());

@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class LessonService {
@@ -28,7 +30,7 @@ public class LessonService {
 
     public LessonResponseDto createLesson(LessonInputDto lessonInputDto) {
         // Lijst van stijlen ophalen op basis van styleIds
-        List<Style> styles = new ArrayList<>();
+        Set<Style> styles = new HashSet<>();
 
         if (lessonInputDto.getStyleIds() != null && !lessonInputDto.getStyleIds().isEmpty()) {
             styles.addAll(styleRepository.findAllById(lessonInputDto.getStyleIds()));
