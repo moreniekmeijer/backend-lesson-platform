@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
+import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.LessonService;
@@ -19,7 +20,7 @@ public class LessonController {
     }
 
     @PostMapping
-    public ResponseEntity<LessonResponseDto> createLesson(@RequestBody LessonInputDto lessonInputDto) {
+    public ResponseEntity<LessonResponseDto> createLesson(@Valid @RequestBody LessonInputDto lessonInputDto) {
         LessonResponseDto createdLesson = lessonService.createLesson(lessonInputDto);
         return ResponseEntity.ok(createdLesson);
     }

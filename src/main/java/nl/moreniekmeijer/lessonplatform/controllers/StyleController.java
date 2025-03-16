@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
+import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
@@ -22,7 +23,7 @@ public class StyleController {
     }
 
     @PostMapping
-    public ResponseEntity<StyleResponseDto> addStyle(@RequestBody StyleInputDto styleInputDto) {
+    public ResponseEntity<StyleResponseDto> addStyle(@Valid @RequestBody StyleInputDto styleInputDto) {
         StyleResponseDto savedStyle = styleService.addStyle(styleInputDto);
         URI location = URIUtil.createResourceUri(savedStyle.getId());
         return ResponseEntity.created(location).body(savedStyle);
@@ -45,7 +46,7 @@ public class StyleController {
     }
 
     @PutMapping("/{styleId}/materials/{materialId}")
-    public ResponseEntity<StyleResponseDto> assignMaterialToStyle(@PathVariable Long styleId, @PathVariable Long materialId) {
+    public ResponseEntity<StyleResponseDto> assignMaterialToStyle(@Valid @PathVariable Long styleId, @PathVariable Long materialId) {
         StyleResponseDto updatedStyle = styleService.assignMaterialToStyle(styleId, materialId);
         return ResponseEntity.ok(updatedStyle);
     }

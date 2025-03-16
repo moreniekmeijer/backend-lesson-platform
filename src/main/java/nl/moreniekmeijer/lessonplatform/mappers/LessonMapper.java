@@ -5,7 +5,6 @@ import nl.moreniekmeijer.lessonplatform.dtos.LessonResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 
-import java.util.List;
 import java.util.Set;
 
 public class LessonMapper {
@@ -18,14 +17,12 @@ public class LessonMapper {
     }
 
     public static LessonResponseDto toResponseDto(Lesson lesson) {
-        LessonResponseDto dto = new LessonResponseDto();
-        dto.setId(lesson.getId());
-        dto.setScheduledDateTime(lesson.getScheduledDateTime());
-        dto.setNotes(lesson.getNotes());
-        if (lesson.getStyles() != null && !lesson.getStyles().isEmpty()) {
-            dto.setStyles(lesson.getStyles());
-        }
-        return dto;
+        LessonResponseDto responseDto = new LessonResponseDto();
+        responseDto.setId(lesson.getId());
+        responseDto.setScheduledDateTime(lesson.getScheduledDateTime());
+        responseDto.setNotes(lesson.getNotes());
+        responseDto.setStyles(lesson.getStyles());
+        return responseDto;
     }
 
 }

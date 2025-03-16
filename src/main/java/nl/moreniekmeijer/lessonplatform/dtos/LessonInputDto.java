@@ -14,7 +14,7 @@ public class LessonInputDto {
 //    @NotNull(message = "Status is required")
 //    private LessonStatus status;
 
-    @NotEmpty(message = "A lesson must have at least one style")
+    @NotEmpty(message = "A lesson must have at least one style") // NotEmpty is dubbelop.
     private List<Long> styleIds;
     @NotEmpty(message = "A lesson must have at least one style")
     private List<String> styleNames;

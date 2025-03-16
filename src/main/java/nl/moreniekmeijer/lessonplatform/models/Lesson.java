@@ -22,8 +22,12 @@ public class Lesson {
 //    @Enumerated(EnumType.STRING)
 //    private LessonStatus status;
 
-    @ManyToMany(mappedBy = "lessons")
-    @NotEmpty(message = "A lesson must have at least one style")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "lessons_styles",
+            joinColumns = @JoinColumn(name = "lessons_id"),
+            inverseJoinColumns = @JoinColumn(name = "styles_id")
+    )
     private Set<Style> styles;
 
     public Lesson() {

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "styles")
@@ -13,16 +14,12 @@ public class Style {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String origin;
     private String description;
 
-    @ManyToMany
-    @JoinTable(
-            name = "lessons_styles",
-            joinColumns = @JoinColumn(name = "styles_id"),
-            inverseJoinColumns = @JoinColumn(name = "lessons_id")
-    )
+    @ManyToMany(mappedBy = "styles")
     @JsonIgnore
     private List<Lesson> lessons;
 
