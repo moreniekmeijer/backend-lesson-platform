@@ -28,7 +28,13 @@ public class LessonService {
     }
 
     public LessonResponseDto createLesson(LessonInputDto lessonInputDto) {
+        if ((lessonInputDto.getStyleIds() == null || lessonInputDto.getStyleIds().isEmpty()) &&
+                (lessonInputDto.getStyleNames() == null || lessonInputDto.getStyleNames().isEmpty())) {
+            throw new IllegalArgumentException("At least one of styleIds ór styleNames must be provided");
+        }
+
         Set<Style> styles = new HashSet<>();
+
 
         if (lessonInputDto.getStyleIds() != null && !lessonInputDto.getStyleIds().isEmpty()) {
             styles.addAll(styleRepository.findAllById(lessonInputDto.getStyleIds()));
