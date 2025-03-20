@@ -8,9 +8,7 @@ public class UserMapper {
 
     public static User toEntity(UserInputDto dto) {
         User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
+        updateEntity(user, dto);
         return user;
     }
 
@@ -22,9 +20,9 @@ public class UserMapper {
         return responseDto;
     }
 
-//    public static void updateEntity(User user, UserInputDto dto) {
-//        user.setUsername(dto.getUsername());
-//        user.setEmail(dto.getEmail());
-//        user.setPassword(dto.getPassword());
-//    }
+    public static void updateEntity(User user, UserInputDto dto) {
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+    }
 }
