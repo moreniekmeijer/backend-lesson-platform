@@ -21,8 +21,12 @@ public class StyleMapper {
         responseDto.setName(style.getName());
         responseDto.setOrigin(style.getOrigin());
         responseDto.setDescription(style.getDescription());
-        responseDto.setLessonIds(style.getLessons() != null ? style.getLessons().stream().map(Lesson::getId).toList() : null);
-        responseDto.setMaterials(style.getMaterials() != null ? style.getMaterials().stream().map(MaterialMapper::toResponseDto).toList() : null);
+        responseDto.setLessonIds(style.getLessons() != null
+                ? style.getLessons().stream().map(Lesson::getId).toList()
+                : null);
+        responseDto.setMaterialIds(style.getMaterials() != null
+                ? style.getMaterials().stream().map(Material::getId).toList()
+                : null);
         return responseDto;
     }
 }

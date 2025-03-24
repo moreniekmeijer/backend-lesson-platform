@@ -10,7 +10,7 @@ public class StyleResponseDto {
     private String origin;
     private String description;
     private List<Long> lessonIds;
-    private List<MaterialResponseDto> materials;
+    private List<Long> materialIds;
 
     public Long getId() {
         return id;
@@ -52,11 +52,11 @@ public class StyleResponseDto {
         this.lessonIds = lessonIds;
     }
 
-    public List<MaterialResponseDto> getMaterials() {
-        return materials;
+    public List<Long> getMaterialIds() {
+        return materialIds;
     }
 
-    public void setMaterials(List<MaterialResponseDto> materials) {
-        this.materials = materials;
+    public void setMaterialIds(List<Long> materialIds) {
+        this.materialIds = materialIds;
     }
 }
