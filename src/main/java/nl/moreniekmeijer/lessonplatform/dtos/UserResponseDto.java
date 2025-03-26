@@ -2,19 +2,10 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 
 public class UserResponseDto {
 
-    private Long id;
     private String username;
     private String email;
 
     public UserResponseDto() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getUsername() {

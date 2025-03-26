@@ -24,7 +24,9 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserResponseDto> addUser(@Valid @RequestBody UserInputDto userInputDto) {
         UserResponseDto savedUser = userService.addUser(userInputDto);
-        URI location = URIUtil.createResourceUri(savedUser.getId());
+        // userService.addAuthority(savedUser, "ROLE_USER");
+
+        URI location = URIUtil.createResourceUriUser(savedUser.getUsername());
         return ResponseEntity.created(location).body(savedUser);
     }
 
@@ -33,20 +35,20 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    @GetMapping("/{username}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable String username) {
+        return ResponseEntity.ok(userService.getUser(username));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserInputDto userInputDto) {
-        UserResponseDto updatedUser = userService.updateUser(id, userInputDto);
+    @PutMapping("/{username}")
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable String username, @Valid @RequestBody UserInputDto userInputDto) {
+        UserResponseDto updatedUser = userService.updateUser(username, userInputDto);
         return ResponseEntity.ok(updatedUser);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
+        userService.deleteUser(username);
         return ResponseEntity.noContent().build();
     }
 }
