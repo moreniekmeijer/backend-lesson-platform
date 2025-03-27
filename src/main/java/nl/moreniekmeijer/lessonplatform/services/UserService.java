@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.moreniekmeijer.lessonplatform.dtos.UserDetailsDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
@@ -38,6 +39,14 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
         return UserMapper.toResponseDto(user);
     }
+
+    public UserDetailsDto getUserWithPassword(String username) {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+
+        return new UserDetailsDto(user.getUsername(), user.getPassword(), user.getAuthorities());
+    }
+
 
     public UserResponseDto updateUser(String username, UserInputDto userInputDto) {
         User user = userRepository.findById(username)

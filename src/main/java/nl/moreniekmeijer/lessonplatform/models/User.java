@@ -2,6 +2,8 @@ package nl.moreniekmeijer.lessonplatform.models;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -15,6 +17,14 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @OneToMany(
+            targetEntity = Authority.class,
+            mappedBy = "username",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER)
+    private Set<Authority> authorities;
 
     public User() {
     }
@@ -43,4 +53,15 @@ public class User {
         this.password = password;
     }
 
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthority(Authority authority) {
+        this.authorities.add(authority);
+    }
+
+    public void removeAuthority(Authority authority) {
+        this.authorities.remove(authority);
+    }
 }
