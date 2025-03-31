@@ -2,6 +2,7 @@ package nl.moreniekmeijer.lessonplatform.models;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -9,7 +10,7 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
@@ -24,9 +25,16 @@ public class User {
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER)
-    private Set<Authority> authorities;
+    private Set<Authority> authorities = new HashSet<>();
 
     public User() {
+    }
+
+    public User(String username, String email, String password, Set<Authority> authorities) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.authorities = authorities;
     }
 
     public String getUsername() {
@@ -57,7 +65,7 @@ public class User {
         return authorities;
     }
 
-    public void setAuthority(Authority authority) {
+    public void addAuthority(Authority authority) {
         this.authorities.add(authority);
     }
 
