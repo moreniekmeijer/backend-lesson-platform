@@ -29,8 +29,18 @@ public class MaterialController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MaterialResponseDto>> getAllMaterials() {
-        return ResponseEntity.ok(materialService.getAllMaterials());
+    public ResponseEntity<List<MaterialResponseDto>> getFilteredMaterials(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String fileType,
+            @RequestParam(required = false) String instrument,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String styleName,
+            @RequestParam(required = false) String origin
+    ) {
+        List<MaterialResponseDto> filteredMaterials = materialService.getFilteredMaterials(
+                search, fileType, instrument, category, styleName, origin
+        );
+        return ResponseEntity.ok(filteredMaterials);
     }
 
     @GetMapping("/{id}")

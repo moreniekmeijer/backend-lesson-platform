@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
+import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
@@ -36,8 +37,48 @@ public class MaterialService {
         return MaterialMapper.toResponseDto(savedMaterial);
     }
 
-    public List<MaterialResponseDto> getAllMaterials() {
+    public List<MaterialResponseDto> getFilteredMaterials(
+            String search, String fileType, String instrument,
+            String category, String styleName, String origin
+    ) {
         List<Material> foundMaterials = materialRepository.findAll();
+
+        // Filteren op zoekterm (titel)
+        if (search != null && !search.isEmpty()) {
+            foundMaterials = foundMaterials.stream()
+                    .filter(m -> m.getTitle().toLowerCase().contains(search.toLowerCase()))
+                    .toList();
+        }
+
+        // Filteren op andere parameters
+        if (fileType != null) {
+            try {
+                FileType fileTypeEnum = FileType.valueOf(fileType.toUpperCase()); // Zet om naar ENUM
+                foundMaterials = foundMaterials.stream()
+                        .filter(m -> m.getFileType() == fileTypeEnum) // Vergelijk ENUM direct
+                        .toList();
+            } catch (IllegalArgumentException e) {
+                System.out.println("Ongeldig bestandstype: " + fileType);
+            }
+        }
+
+        if (instrument != null) {
+            foundMaterials = foundMaterials.stream().filter(m -> m.getInstrument().equals(instrument)).toList();
+        }
+        if (category != null) {
+            foundMaterials = foundMaterials.stream().filter(m -> m.getCategory().equals(category)).toList();
+        }
+        if (styleName != null) {
+            foundMaterials = foundMaterials.stream()
+                    .filter(m -> m.getStyle() != null && m.getStyle().getName().equals(styleName))
+                    .toList();
+        }
+        if (origin != null) {
+            foundMaterials = foundMaterials.stream()
+                    .filter(m -> m.getStyle() != null && m.getStyle().getOrigin().equals(origin))
+                    .toList();
+        }
+
         return foundMaterials.stream()
                 .map(MaterialMapper::toResponseDto)
                 .toList();
