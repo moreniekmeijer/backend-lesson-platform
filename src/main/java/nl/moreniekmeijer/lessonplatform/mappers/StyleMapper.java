@@ -2,9 +2,12 @@ package nl.moreniekmeijer.lessonplatform.mappers;
 
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
+import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Material;
+
+import java.util.List;
 
 public class StyleMapper {
     public static Style toEntity(StyleInputDto dto) {
@@ -27,6 +30,13 @@ public class StyleMapper {
         responseDto.setMaterialIds(style.getMaterials() != null
                 ? style.getMaterials().stream().map(Material::getId).toList()
                 : null);
+        responseDto.setLinks(style.getMaterials() != null
+                ? style.getMaterials().stream()
+                .filter(material -> material.getFileType() == FileType.LINK)
+                .map(Material::getFilePath)
+                .toList()
+                : List.of());
+
         return responseDto;
     }
 }
