@@ -14,8 +14,6 @@ public class MaterialInputDto {
 
     private String filePath;
 
-    private String link;
-
     @NotBlank(message = "Instrument is required")
     private String instrument;
 
@@ -45,14 +43,6 @@ public class MaterialInputDto {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 
     public String getInstrument() {

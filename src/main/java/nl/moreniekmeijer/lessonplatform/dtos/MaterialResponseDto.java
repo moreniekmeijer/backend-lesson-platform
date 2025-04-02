@@ -8,7 +8,6 @@ public class MaterialResponseDto {
     private String title;
     private FileType fileType;
     private String filePath;
-    private String link;
     private String instrument;
     private String category;
     private String styleName;
@@ -43,14 +42,6 @@ public class MaterialResponseDto {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 
     public String getInstrument() {

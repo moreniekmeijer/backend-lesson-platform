@@ -16,7 +16,6 @@ public class Material {
     private FileType fileType;
 
     private String filePath;
-    private String link;
     private String instrument;
     private String category;
 
@@ -28,12 +27,11 @@ public class Material {
     public Material() {
     }
 
-    public Material(Long id, String title, FileType fileType, String filePath, String link, String instrument, String category, Style style) {
+    public Material(Long id, String title, FileType fileType, String filePath, String instrument, String category, Style style) {
         this.id = id;
         this.title = title;
         this.fileType = fileType;
         this.filePath = filePath;
-        this.link = link;
         this.instrument = instrument;
         this.category = category;
         this.style = style;
@@ -69,14 +67,6 @@ public class Material {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 
     public String getInstrument() {
