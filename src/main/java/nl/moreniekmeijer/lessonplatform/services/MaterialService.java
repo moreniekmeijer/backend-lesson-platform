@@ -43,15 +43,13 @@ public class MaterialService {
     ) {
         List<Material> foundMaterials = materialRepository.findAll();
 
-        // Filteren op zoekterm (titel)
         if (search != null && !search.isEmpty()) {
             foundMaterials = foundMaterials.stream()
                     .filter(m -> m.getTitle().toLowerCase().contains(search.toLowerCase()))
                     .toList();
         }
 
-        // Filteren op andere parameters
-        if (fileType != null) {
+        if (fileType != null && !fileType.isEmpty()) {
             try {
                 FileType fileTypeEnum = FileType.valueOf(fileType.toUpperCase()); // Zet om naar ENUM
                 foundMaterials = foundMaterials.stream()
@@ -62,18 +60,21 @@ public class MaterialService {
             }
         }
 
-        if (instrument != null) {
+        if (instrument != null && !instrument.isEmpty()) {
             foundMaterials = foundMaterials.stream().filter(m -> m.getInstrument().equals(instrument)).toList();
         }
-        if (category != null) {
+
+        if (category != null && !category.isEmpty()) {
             foundMaterials = foundMaterials.stream().filter(m -> m.getCategory().equals(category)).toList();
         }
-        if (styleName != null) {
+
+        if (styleName != null && !styleName.isEmpty()) {
             foundMaterials = foundMaterials.stream()
                     .filter(m -> m.getStyle() != null && m.getStyle().getName().equals(styleName))
                     .toList();
         }
-        if (origin != null) {
+
+        if (origin != null && !origin.isEmpty()) {
             foundMaterials = foundMaterials.stream()
                     .filter(m -> m.getStyle() != null && m.getStyle().getOrigin().equals(origin))
                     .toList();
