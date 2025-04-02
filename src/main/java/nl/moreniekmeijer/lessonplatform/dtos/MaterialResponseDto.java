@@ -11,6 +11,7 @@ public class MaterialResponseDto {
     private String instrument;
     private String category;
     private String styleName;
+    private String origin;
 
     public Long getId() {
         return id;
@@ -66,5 +67,13 @@ public class MaterialResponseDto {
 
     public void setStyleName(String styleName) {
         this.styleName = styleName;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 }

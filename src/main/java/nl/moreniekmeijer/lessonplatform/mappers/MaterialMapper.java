@@ -12,7 +12,6 @@ public class MaterialMapper {
         material.setTitle(dto.getTitle());
         material.setFileType(dto.getFileType());
         material.setFilePath(dto.getFilePath());
-        material.setLink(dto.getLink());
         material.setInstrument(dto.getInstrument());
         material.setStyle(style);
         return material;
@@ -24,10 +23,10 @@ public class MaterialMapper {
         responseDto.setTitle(material.getTitle());
         responseDto.setFileType(material.getFileType());
         responseDto.setFilePath(material.getFilePath());
-        responseDto.setLink(material.getLink());
         responseDto.setInstrument(material.getInstrument());
         responseDto.setCategory(material.getCategory());
         responseDto.setStyleName(material.getStyle() != null ? material.getStyle().getName() : null);
+        responseDto.setOrigin(material.getStyle() != null ? material.getStyle().getOrigin() : null);
         return responseDto;
     }
 }
