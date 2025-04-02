@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -41,15 +42,16 @@ public class SpringSecurityConfig {
         http
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorization -> authorization
-                        // permits all for testing:
+//                        permits all for testing:
                         .requestMatchers("/**").permitAll()
+                        .requestMatchers("/authenticate").permitAll()
                         .requestMatchers(HttpMethod.GET).authenticated()
                         .requestMatchers("/**").hasRole("ADMIN")
                         .anyRequest().denyAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable);
-
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
