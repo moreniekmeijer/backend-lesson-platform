@@ -44,12 +44,14 @@ public class MaterialService {
     }
 
     public MaterialResponseDto getMaterialById(Long id) {
-        Material foundMaterial = materialRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
+        Material foundMaterial = materialRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
         return MaterialMapper.toResponseDto(foundMaterial);
     }
 
     public void deleteMaterial(Long id) {
-        Material foundMaterial = materialRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
+        Material foundMaterial = materialRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
         materialRepository.delete(foundMaterial);
     }
 }
