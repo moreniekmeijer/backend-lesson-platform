@@ -96,4 +96,15 @@ public class MaterialService {
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
         materialRepository.delete(foundMaterial);
     }
+
+    public MaterialResponseDto assignFileToMaterial(String fileName, Long materialId) {
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
+
+        material.setFilePath(fileName);
+        Material savedMaterial = materialRepository.save(material);
+
+        return MaterialMapper.toResponseDto(savedMaterial);
+    }
+
 }

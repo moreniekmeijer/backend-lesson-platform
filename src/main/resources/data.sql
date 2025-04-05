@@ -16,3 +16,6 @@ VALUES ('2025-03-20T15:00:00', 'Let goed op deze notitie!');
 
 INSERT INTO lessons_styles (lessons_id, styles_id)
 VALUES (1, 1), (1, 2);
+
+INSERT INTO users (username, password, email)
+VALUES ('admin', '$2a$12$MNoFFXXaTC2COC86QX3Axez0HOo6hTKOESSgGcMbIE/mj9I5diHn6', 'admin@test.nl' )

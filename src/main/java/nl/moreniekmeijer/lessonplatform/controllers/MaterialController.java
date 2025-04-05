@@ -3,11 +3,14 @@ package nl.moreniekmeijer.lessonplatform.controllers;
 import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
+import nl.moreniekmeijer.lessonplatform.services.FileService;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -16,9 +19,11 @@ import java.util.List;
 public class MaterialController {
 
     private final MaterialService materialService;
+    private final FileService fileService;
 
-    public MaterialController(MaterialService materialService) {
+    public MaterialController(MaterialService materialService, FileService fileService) {
         this.materialService = materialService;
+        this.fileService = fileService;
     }
 
     @PostMapping
@@ -52,5 +57,14 @@ public class MaterialController {
     public ResponseEntity<Void> deleteMaterial(@PathVariable Long id) {
         materialService.deleteMaterial(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/file")
+    public ResponseEntity<MaterialResponseDto> addFileToMaterial(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        URI location = URIUtil.createResourceUri(id);
+        String fileName = fileService.saveFile(file);
+        MaterialResponseDto savedMaterial = materialService.assignFileToMaterial(fileName, id);
+
+        return ResponseEntity.created(location).body(savedMaterial);
     }
 }
