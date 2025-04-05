@@ -9,7 +9,8 @@ public class MaterialInputDto {
     @NotBlank(message = "Title is required")
     private String title;
 
-    @NotNull(message = "FileType is required")
+//    TODO - Fix in frontend
+//    @NotNull(message = "FileType is required")
     private FileType fileType;
 
     private String filePath;

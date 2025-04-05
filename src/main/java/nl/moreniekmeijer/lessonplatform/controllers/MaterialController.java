@@ -61,9 +61,10 @@ public class MaterialController {
 
     @PostMapping("/{id}/file")
     public ResponseEntity<MaterialResponseDto> addFileToMaterial(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        URI location = URIUtil.createResourceUri(id);
         String fileName = fileService.saveFile(file);
         MaterialResponseDto savedMaterial = materialService.assignFileToMaterial(fileName, id);
+//        TODO - URI creation klopt nog niet helemaal
+        URI location = URIUtil.createResourceUri(id);
 
         return ResponseEntity.created(location).body(savedMaterial);
     }

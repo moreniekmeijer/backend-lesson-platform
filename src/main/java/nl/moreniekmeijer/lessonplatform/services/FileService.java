@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -27,6 +28,15 @@ public class FileService {
 
     public String saveFile(MultipartFile file) throws IOException {
         String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+
+        List<String> allowedExtensions = List.of("pdf", "mp4");
+
+        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        if (!allowedExtensions.contains(extension)) {
+            throw new IllegalArgumentException("Only .pdf and .mp4 files are allowed.");
+        }
+
+
         Path filePath = this.fileStoragePath.resolve(filename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 

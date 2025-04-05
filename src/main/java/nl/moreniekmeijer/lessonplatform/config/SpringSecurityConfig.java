@@ -43,7 +43,7 @@ public class SpringSecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorization -> authorization
 //                        permits all for testing:
-//                        .requestMatchers("/**").permitAll()
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/authenticate").permitAll()
                         .requestMatchers(HttpMethod.GET).authenticated()
                         .requestMatchers("/**").hasRole("ADMIN")
