@@ -97,14 +97,25 @@ public class MaterialService {
         materialRepository.delete(foundMaterial);
     }
 
-    public MaterialResponseDto assignFileToMaterial(String fileName, Long materialId) {
+    public MaterialResponseDto assignToMaterial(String fileNameOrLink, Long materialId, FileType fileType) {
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
 
-        material.setFilePath(fileName);
-        Material savedMaterial = materialRepository.save(material);
+        // Als de fileType LINK is, behandel het dan als een link
+        if (fileType == FileType.LINK) {
+            material.setFilePath(fileNameOrLink); // Voor een link, stel het filePath in als de link
+        } else {
+            material.setFilePath(fileNameOrLink); // Voor bestanden, stel het filePath in als de bestandsnaam
+        }
 
-        return MaterialMapper.toResponseDto(savedMaterial);
+        material.setFileType(fileType);  // Stel het fileType in (VIDEO, AUDIO, PDF, LINK)
+
+        // Update het Material in de database
+        Material updatedMaterial = materialRepository.save(material);
+
+        // Retourneer het resultaat
+        return MaterialMapper.toResponseDto(updatedMaterial);
     }
+
 
 }

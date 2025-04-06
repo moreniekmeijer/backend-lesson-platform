@@ -1,6 +1,8 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
 import jakarta.validation.Valid;
+import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
+import nl.moreniekmeijer.lessonplatform.dtos.LinkInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.FileService;
@@ -61,11 +63,19 @@ public class MaterialController {
 
     @PostMapping("/{id}/file")
     public ResponseEntity<MaterialResponseDto> addFileToMaterial(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        String fileName = fileService.saveFile(file);
-        MaterialResponseDto savedMaterial = materialService.assignFileToMaterial(fileName, id);
-//        TODO - URI creation klopt nog niet helemaal
-        URI location = URIUtil.createResourceUri(id);
-
+        FileResponseDto fileResponse = fileService.saveFile(file);
+        MaterialResponseDto savedMaterial = materialService.assignToMaterial(fileResponse.getFileName(), id, fileResponse.getFileType());
+        URI location = URIUtil.createFileAssignmentUri(id);
         return ResponseEntity.created(location).body(savedMaterial);
     }
+
+    @PostMapping("/{id}/link")
+    public ResponseEntity<MaterialResponseDto> addLinkToMaterial(@PathVariable Long id, @Valid @RequestBody LinkInputDto linkInputDto) throws IOException {
+        String link = linkInputDto.getLink();
+        FileResponseDto FileResponseDto = fileService.saveLink(link);
+        MaterialResponseDto savedMaterial = materialService.assignToMaterial(FileResponseDto.getFilePath(), id, FileResponseDto.getFileType());
+        URI location = URIUtil.createLinkAssignmentUri(id);
+        return ResponseEntity.created(location).body(savedMaterial);
+    }
+
 }

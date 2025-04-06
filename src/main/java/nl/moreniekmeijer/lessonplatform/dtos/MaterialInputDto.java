@@ -1,7 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.dtos;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 
 public class MaterialInputDto {
@@ -15,7 +14,6 @@ public class MaterialInputDto {
 
     private String filePath;
 
-    @NotBlank(message = "Instrument is required")
     private String instrument;
 
     private String category;

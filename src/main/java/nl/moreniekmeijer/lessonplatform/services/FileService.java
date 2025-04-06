@@ -1,5 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
+import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
+import nl.moreniekmeijer.lessonplatform.models.FileType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -26,21 +28,47 @@ public class FileService {
         }
     }
 
-    public String saveFile(MultipartFile file) throws IOException {
-        String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+    public FileResponseDto saveFile(MultipartFile file) throws IOException {
+        String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+        String extension = originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
+        String mimeType = getMimeType(file, extension);
 
-        List<String> allowedExtensions = List.of("pdf", "mp4");
+        // Bepaal het FileType op basis van de extensie
+        FileType fileType = switch (extension) {
+            case "pdf" -> FileType.PDF;
+            case "mp4", "mov" -> FileType.VIDEO;
+            case "mp3" -> FileType.AUDIO;
+            default -> throw new IllegalArgumentException("Unsupported file type.");
+        };
 
-        String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
-        if (!allowedExtensions.contains(extension)) {
-            throw new IllegalArgumentException("Only .pdf and .mp4 files are allowed.");
-        }
-
-
-        Path filePath = this.fileStoragePath.resolve(filename);
+        // Bestanden opslaan
+        Path filePath = this.fileStoragePath.resolve(originalFilename);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        return filename;
+        return new FileResponseDto(
+                originalFilename,
+                filePath.toString(),
+                mimeType,
+                fileType
+        );
     }
 
+    public FileResponseDto saveLink(String link) {
+        // Als er een link is, verwerk dan de link
+        return new FileResponseDto(
+                "Link", // Naam voor de link
+                link,
+                "application/link", // Dit is een placeholder voor MIME type
+                FileType.LINK
+        );
+    }
+
+    private String getMimeType(MultipartFile file, String extension) {
+        return switch (extension) {
+            case "pdf" -> "application/pdf";
+            case "mp4" -> "video/mp4";
+            case "mp3" -> "audio/mpeg";
+            default -> "application/octet-stream"; // fallback MIME-type
+        };
+    }
 }
