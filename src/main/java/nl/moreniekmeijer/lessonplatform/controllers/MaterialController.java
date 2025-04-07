@@ -104,6 +104,7 @@ public class MaterialController {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(mimeType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
 
     }
@@ -116,5 +117,4 @@ public class MaterialController {
         URI location = URIUtil.createLinkAssignmentUri(id);
         return ResponseEntity.created(location).body(savedMaterial);
     }
-
 }
