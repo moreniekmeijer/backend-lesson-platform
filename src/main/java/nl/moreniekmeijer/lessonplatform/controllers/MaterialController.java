@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LinkInputDto;
@@ -8,13 +9,32 @@ import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.FileService;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.InvalidMediaTypeException;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.transaction.Transactional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/materials")
@@ -67,6 +87,25 @@ public class MaterialController {
         MaterialResponseDto savedMaterial = materialService.assignToMaterial(fileResponse.getFileName(), id, fileResponse.getFileType());
         URI location = URIUtil.createFileAssignmentUri(id);
         return ResponseEntity.created(location).body(savedMaterial);
+    }
+
+    @GetMapping("/{id}/file")
+    public ResponseEntity<Resource> getFile(@PathVariable Long id, HttpServletRequest request) {
+        Resource resource = materialService.getFileFromMaterial(id);
+
+        String mimeType;
+
+        try {
+            mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+        } catch (IOException e) {
+            mimeType = "application/octet-stream";
+        }
+
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType(mimeType))
+                .body(resource);
+
     }
 
     @PostMapping("/{id}/link")

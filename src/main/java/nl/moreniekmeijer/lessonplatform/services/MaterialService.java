@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
@@ -10,7 +11,9 @@ import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.core.io.Resource;
 
+import java.beans.Transient;
 import java.util.List;
 
 @Service
@@ -18,10 +21,12 @@ public class MaterialService {
 
     private final MaterialRepository materialRepository;
     private final StyleRepository styleRepository;
+    private final FileService fileService;
 
-    public MaterialService(MaterialRepository materialRepository, StyleRepository styleRepository) {
+    public MaterialService(MaterialRepository materialRepository, StyleRepository styleRepository, FileService fileService) {
         this.materialRepository = materialRepository;
         this.styleRepository = styleRepository;
+        this.fileService = fileService;
     }
 
     public MaterialResponseDto addMaterial(MaterialInputDto materialInputDto) {
@@ -116,6 +121,21 @@ public class MaterialService {
         // Retourneer het resultaat
         return MaterialMapper.toResponseDto(updatedMaterial);
     }
+
+    @Transactional
+    public Resource getFileFromMaterial (Long id) {
+        Material foundMaterial = materialRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
+
+        if (foundMaterial.getFileType() == FileType.LINK) {
+            throw new EntityNotFoundException("Link found");
+        }
+
+        String fileName = foundMaterial.getFilePath();
+
+        return fileService.downloadFile(fileName);
+    }
+
 
 
 }
