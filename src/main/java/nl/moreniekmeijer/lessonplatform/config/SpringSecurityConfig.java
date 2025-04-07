@@ -42,8 +42,10 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/**").permitAll()
                         .requestMatchers("/authenticate").permitAll() // iedereen mag inloggen
                         .requestMatchers("/users/**").authenticated() // ingelogden mogen eigen gegevens beheren
                         .requestMatchers(HttpMethod.GET, "/**").authenticated() // ingelogden mogen alles GET-en
