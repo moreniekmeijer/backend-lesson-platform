@@ -3,13 +3,16 @@ VALUES ('Maracatu', 'Brazil', 'Traditional Brazilian rhythm with powerful percus
        ('Samba', 'Brazil', 'Popular Brazilian music genre characterized by lively rhythms and percussion.'),
        ('Makru', 'Africa', 'Traditional West African rhythm, commonly played on djembe and dunun drums.');
 
+-- TODO - needs to be updated with material in /uploads
 INSERT INTO material (title, file_type, file_path, instrument, category, styles_id)
-VALUES ('Breakdown of Maracatu', 'VIDEO', 'path/to/maracatu_breakdown.mp4', 'Surdo', 'Rhythm', 1),
+VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
+       ('Snardrum partij', 'VIDEO', 'Snaredrum partij.MP4', 'Snaredrum', 'Partij', 1),
        ('Maracatu Arrangement', 'PDF', 'path/to/maracatu_arrangement.pdf', 'Snare Drum', 'Sheet Music', 1),
-       ('Surdo Rhythm for Samba', 'VIDEO', 'path/to/samba_surdo_rhythm.mp4', 'Surdo', 'Rhythm', 2),
-       ('Samba Break', 'VIDEO', 'path/to/samba_break.mp4', 'Snare Drum', 'Rhythm', 2),
-       ('Makru Drum Rhythms', 'VIDEO', 'path/to/makru_drum_rhythms.mp4', 'Djembe', 'Rhythm', 3),
-       ('Cool Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=cooldjembe', 'Djembe', 'Video', 3);
+       ('Snaredrum partij (samba)', 'VIDEO', 'Snaredrum partij (samba).mp4', 'Surdo', 'Rhythm', 2),
+       ('Samba Break', 'VIDEO', 'Break 1 (Samba Reggea).MOV', 'diversen', 'Break', 2),
+       ('Djembe partij 1', 'VIDEO', 'Djembe ritme 1.MP4', 'Djembe', 'Partij', 3),
+       ('Djembe partij 2', 'VIDEO', 'Djembe ritme 2.MP4', 'Djembe', 'Partij', 3),
+       ('Cool Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Djembe', 'Voorbeeld', 3);
 
 INSERT INTO lessons (scheduled_date_time, notes)
 VALUES ('2025-03-20T15:00:00', 'Let goed op deze notitie!');
