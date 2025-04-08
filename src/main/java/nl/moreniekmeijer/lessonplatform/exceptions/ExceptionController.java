@@ -47,4 +47,9 @@ public class ExceptionController {
     public ResponseEntity<String> handleIllegalStateException(IllegalStateException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
+
+    @ExceptionHandler(InvalidInviteCodeException.class)
+    public ResponseEntity<String> handleInvalidInviteCodeException(InvalidInviteCodeException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 }
