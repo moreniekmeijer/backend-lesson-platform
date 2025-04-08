@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.mappers;
 
+import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
@@ -8,6 +9,7 @@ import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Material;
 
 import java.util.List;
+import java.util.Objects;
 
 public class StyleMapper {
     public static Style toEntity(StyleInputDto dto) {
@@ -20,23 +22,33 @@ public class StyleMapper {
 
     public static StyleResponseDto toResponseDto(Style style) {
         StyleResponseDto responseDto = new StyleResponseDto();
+
         responseDto.setId(style.getId());
         responseDto.setName(style.getName());
         responseDto.setOrigin(style.getOrigin());
         responseDto.setDescription(style.getDescription());
+
         responseDto.setLessonIds(style.getLessons() != null
-                ? style.getLessons().stream().map(Lesson::getId).toList()
-                : null);
-        responseDto.setMaterialIds(style.getMaterials() != null
-                ? style.getMaterials().stream().map(Material::getId).toList()
-                : null);
-        responseDto.setLinks(style.getMaterials() != null
-                ? style.getMaterials().stream()
-                .filter(material -> material.getFileType() == FileType.LINK)
-                .map(Material::getFilePath)
+                ? style.getLessons().stream()
+                .map(Lesson::getId)
                 .toList()
                 : List.of());
 
+        List<MaterialResponseDto> materialResponseDtos = style.getMaterials() != null
+                ? style.getMaterials().stream()
+                .map(MaterialMapper::toResponseDto)
+                .toList()
+                : List.of();
+
+        responseDto.setMaterials(materialResponseDtos);
+
+        responseDto.setLinks(
+                materialResponseDtos.stream()
+                        .filter(dto -> dto.getFileType() != null && dto.getFileType().name().equals("LINK"))
+                        .map(MaterialResponseDto::getFileLink)
+                        .filter(Objects::nonNull)
+                        .toList()
+        );
         return responseDto;
     }
 }

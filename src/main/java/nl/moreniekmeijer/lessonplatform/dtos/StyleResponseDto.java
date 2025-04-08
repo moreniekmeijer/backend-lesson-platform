@@ -8,7 +8,7 @@ public class StyleResponseDto {
     private String origin;
     private String description;
     private List<Long> lessonIds;
-    private List<Long> materialIds;
+    private List<MaterialResponseDto> materials;
     private List<String> links;
 
     public Long getId() {
@@ -51,12 +51,12 @@ public class StyleResponseDto {
         this.lessonIds = lessonIds;
     }
 
-    public List<Long> getMaterialIds() {
-        return materialIds;
+    public List<MaterialResponseDto> getMaterials() {
+        return materials;
     }
 
-    public void setMaterialIds(List<Long> materialIds) {
-        this.materialIds = materialIds;
+    public void setMaterials(List<MaterialResponseDto> materials) {
+        this.materials = materials;
     }
 
     public List<String> getLinks() {
