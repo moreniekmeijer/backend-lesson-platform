@@ -6,10 +6,14 @@ public class UserInputDto {
 
     @NotNull(message = "Username is required")
     private String username;
+
     private String email;
 
     @NotNull(message = "Password is required")
     private String password;
+
+    @NotNull(message = "Invite code is required")
+    private String inviteCode;
 
     public UserInputDto() {
     }
@@ -36,5 +40,13 @@ public class UserInputDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getInviteCode() {
+        return inviteCode;
+    }
+
+    public void setInviteCode(String inviteCode) {
+        this.inviteCode = inviteCode;
     }
 }

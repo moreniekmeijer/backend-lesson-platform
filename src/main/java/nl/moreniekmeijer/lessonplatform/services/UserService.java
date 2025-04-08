@@ -4,10 +4,12 @@ import jakarta.persistence.EntityNotFoundException;
 import nl.moreniekmeijer.lessonplatform.dtos.UserDetailsDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
+import nl.moreniekmeijer.lessonplatform.exceptions.InvalidInviteCodeException;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
 import nl.moreniekmeijer.lessonplatform.models.Authority;
 import nl.moreniekmeijer.lessonplatform.models.User;
 import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${invite.code}")
+    private String requiredInviteCode;
+
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -27,6 +32,10 @@ public class UserService {
 
     // Moet anders
     public UserResponseDto addUser(UserInputDto userInputDto) {
+        if (!requiredInviteCode.equals(userInputDto.getInviteCode())) {
+            throw new InvalidInviteCodeException("Ongeldige registratiecode");
+        }
+
         User user = UserMapper.toEntity(userInputDto);
         user.setPassword(passwordEncoder.encode(userInputDto.getPassword()));
         User savedUser = userRepository.save(user);
