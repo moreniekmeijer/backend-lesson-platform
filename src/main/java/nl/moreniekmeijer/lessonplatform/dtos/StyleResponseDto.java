@@ -10,6 +10,7 @@ public class StyleResponseDto {
     private List<Long> lessonIds;
     private List<MaterialResponseDto> materials;
     private List<String> links;
+    private Long arrangementId;
 
     public Long getId() {
         return id;
@@ -65,5 +66,13 @@ public class StyleResponseDto {
 
     public void setLinks(List<String> links) {
         this.links = links;
+    }
+
+    public Long getArrangementId() {
+        return arrangementId;
+    }
+
+    public void setArrangementId(Long arrangementId) {
+        this.arrangementId = arrangementId;
     }
 }

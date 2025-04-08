@@ -44,11 +44,20 @@ public class StyleMapper {
 
         responseDto.setLinks(
                 materialResponseDtos.stream()
-                        .filter(dto -> dto.getFileType() != null && dto.getFileType().name().equals("LINK"))
-                        .map(MaterialResponseDto::getFileLink)
+                        .filter(dto -> dto.getFilePath() != null && dto.getFileType().name().equals("LINK"))
+                        .map(MaterialResponseDto::getFilePath)
                         .filter(Objects::nonNull)
                         .toList()
         );
+
+        responseDto.setArrangementId(
+                style.getMaterials().stream()
+                        .filter(material -> "arrangement".equalsIgnoreCase(material.getCategory()) && "PDF".equalsIgnoreCase(material.getFileType().name()))
+                        .map(Material::getId)
+                        .findFirst()
+                        .orElse(null)
+        );
+
         return responseDto;
     }
 }

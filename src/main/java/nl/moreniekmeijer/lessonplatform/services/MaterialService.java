@@ -37,6 +37,15 @@ public class MaterialService {
                     .orElseThrow(() -> new EntityNotFoundException("Style not found with id: " + materialInputDto.getStyleId()));
         }
 
+        // Controleer of er al een materiaal bestaat met fileType "PDF" en category "Arrangement"
+        boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
+                "arrangement", FileType.PDF, materialInputDto.getStyleId());
+
+        if (existsArrangement) {
+            // Hier kun je een uitzondering gooien of een ander gedrag kiezen
+            throw new IllegalStateException("Material with fileType 'PDF' and category 'Arrangement' already exists.");
+        }
+
         Material material = MaterialMapper.toEntity(materialInputDto, style);
         Material savedMaterial = materialRepository.save(material);
         return MaterialMapper.toResponseDto(savedMaterial);
