@@ -1,13 +1,17 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
 import jakarta.validation.Valid;
+import nl.moreniekmeijer.lessonplatform.dtos.AuthenticationResponse;
 import nl.moreniekmeijer.lessonplatform.dtos.UserInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.UserService;
+import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import nl.moreniekmeijer.lessonplatform.exceptions.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -19,18 +23,26 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> addUser(@Valid @RequestBody UserInputDto userInputDto) {
+    public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody UserInputDto userInputDto) {
         UserResponseDto savedUser = userService.addUser(userInputDto);
         userService.addAuthority(savedUser.getUsername(), "ROLE_USER");
 
         URI location = URIUtil.createResourceUriUser(savedUser.getUsername());
-        return ResponseEntity.created(location).body(savedUser);
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getUsername());
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        return ResponseEntity.created(location).body(new AuthenticationResponse(jwt));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
