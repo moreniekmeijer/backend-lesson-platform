@@ -7,11 +7,12 @@ VALUES ('Maracatu', 'Brazil', 'Traditional Brazilian rhythm with powerful percus
 INSERT INTO material (title, file_type, file_path, instrument, category, styles_id)
 VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
        ('Snardrum partij', 'VIDEO', 'Snaredrum partij.MP4', 'Snaredrum', 'Partij', 1),
-       ('Maracatu Arrangement', 'PDF', 'path/to/maracatu_arrangement.pdf', 'Snare Drum', 'Sheet Music', 1),
+       ('Maracatu Arrangement', 'PDF', 'Arrangement Maracatu.pdf', 'Diversen', 'Arrangement', 1),
        ('Snaredrum partij (samba)', 'VIDEO', 'Snaredrum partij (samba).mp4', 'Surdo', 'Rhythm', 2),
-       ('Samba Break', 'VIDEO', 'Break 1 (Samba Reggea).MOV', 'diversen', 'Break', 2),
+       ('Samba Break', 'VIDEO', 'Break 1 (Samba Reggea).MOV', 'Diversen', 'Break', 2),
        ('Djembe partij 1', 'VIDEO', 'Djembe ritme 1.MP4', 'Djembe', 'Partij', 3),
        ('Djembe partij 2', 'VIDEO', 'Djembe ritme 2.MP4', 'Djembe', 'Partij', 3),
+       ('Makru Arrangement', 'PDF', 'Arrangement Makru.pdf', 'Diversen', 'Arrangement', 3),
        ('Cool Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Djembe', 'Voorbeeld', 3);
 
 INSERT INTO lessons (scheduled_date_time, notes)
