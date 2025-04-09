@@ -10,6 +10,7 @@ public class LessonResponseDto {
     private LocalDateTime scheduledDateTime;
     private String notes;
     private Set<Style> styles;
+//    TODO - lesson should return styleIds
 
     public Long getId() {
         return id;

@@ -16,7 +16,7 @@ VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
        ('Cool Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Djembe', 'Voorbeeld', 3);
 
 INSERT INTO lessons (scheduled_date_time, notes)
-VALUES ('2025-03-20T15:00:00', 'Let goed op deze notitie!');
+VALUES ('2025-05-20T15:00:00', 'Let goed op deze notitie!');
 
 INSERT INTO lessons_styles (lessons_id, styles_id)
 VALUES (1, 1),

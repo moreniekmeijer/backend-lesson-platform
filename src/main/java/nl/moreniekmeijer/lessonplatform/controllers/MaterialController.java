@@ -106,7 +106,6 @@ public class MaterialController {
                 .contentType(MediaType.parseMediaType(mimeType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
-
     }
 
     @PostMapping("/{id}/link")

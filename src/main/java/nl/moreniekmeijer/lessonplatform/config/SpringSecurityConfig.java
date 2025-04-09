@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -44,13 +45,16 @@ public class SpringSecurityConfig {
         http
                 .cors(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults())
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**").permitAll()
-                        .requestMatchers("/authenticate").permitAll() // iedereen mag inloggen
-                        .requestMatchers("/users/**").authenticated() // ingelogden mogen eigen gegevens beheren
-                        .requestMatchers(HttpMethod.GET, "/**").authenticated() // ingelogden mogen alles GET-en
-                        .requestMatchers("/**").hasRole("ADMIN") // alleen admin mag de rest (POST/PUT/DELETE etc.)
-                        .anyRequest().denyAll()
+                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                                .requestMatchers("/authenticate").permitAll() // iedereen mag inloggen
+                                .requestMatchers("/users/**").authenticated() // ingelogden mogen eigen gegevens beheren
+                                .requestMatchers(HttpMethod.GET, "/**").authenticated() // ingelogden mogen alles GET-en
+                                .requestMatchers("/**").hasRole("ADMIN") // alleen admin mag de rest (POST/PUT/DELETE etc.)
+                                .anyRequest().denyAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable);
