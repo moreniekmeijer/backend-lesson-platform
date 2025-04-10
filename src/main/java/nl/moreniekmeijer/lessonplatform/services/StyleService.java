@@ -2,8 +2,6 @@ package nl.moreniekmeijer.lessonplatform.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
-import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.StyleMapper;
@@ -11,6 +9,7 @@ import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,11 +27,15 @@ public class StyleService {
 
     public StyleResponseDto addStyle(StyleInputDto styleInputDto) {
         Style style = StyleMapper.toEntity(styleInputDto);
-        Style savedStyle = styleRepository.save(style);
-        return StyleMapper.toResponseDto(savedStyle);
+        try {
+            Style savedStyle = styleRepository.save(style);
+            return StyleMapper.toResponseDto(savedStyle);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("The name must be unique. This name already exists.");
+        }
     }
 
-    // Onderstaande methode uitbouwen met bepaalde RequestParam's?
+    // TODO - Onderstaande methode uitbouwen met bepaalde RequestParam's?
     public List<StyleResponseDto> getAllStyles() {
         List<Style> styles = styleRepository.findAll();
         return styles.stream()

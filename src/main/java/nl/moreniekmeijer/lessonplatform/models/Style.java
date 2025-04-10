@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +16,11 @@ public class Style {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
     private String origin;
+
+    @Column(length = 1000)
     private String description;
 
     @ManyToMany(mappedBy = "styles")
@@ -24,7 +28,7 @@ public class Style {
     private List<Lesson> lessons;
 
     @OneToMany(mappedBy = "style", cascade = CascadeType.ALL)
-    private List<Material> materials;
+    private List<Material> materials = new ArrayList<>();
 
     public Style() {
     }

@@ -10,6 +10,7 @@ import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
 
@@ -47,8 +48,13 @@ public class MaterialService {
         }
 
         Material material = MaterialMapper.toEntity(materialInputDto, style);
-        Material savedMaterial = materialRepository.save(material);
-        return MaterialMapper.toResponseDto(savedMaterial);
+
+        try {
+            Material savedMaterial = materialRepository.save(material);
+            return MaterialMapper.toResponseDto(savedMaterial);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("The title must be unique. This title already exists.");
+        }
     }
 
     public List<MaterialResponseDto> getFilteredMaterials(

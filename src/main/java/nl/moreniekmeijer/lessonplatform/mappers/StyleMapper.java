@@ -10,6 +10,7 @@ import nl.moreniekmeijer.lessonplatform.models.Material;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class StyleMapper {
     public static Style toEntity(StyleInputDto dto) {
@@ -34,11 +35,9 @@ public class StyleMapper {
                 .toList()
                 : List.of());
 
-        List<MaterialResponseDto> materialResponseDtos = style.getMaterials() != null
-                ? style.getMaterials().stream()
+        List<MaterialResponseDto> materialResponseDtos = style.getMaterials().stream()
                 .map(MaterialMapper::toResponseDto)
-                .toList()
-                : List.of();
+                .toList();
 
         responseDto.setMaterials(materialResponseDtos);
 

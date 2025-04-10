@@ -3,18 +3,20 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
 public class StyleInputDto {
 
     @NotBlank(message = "Name is required")
-    @Column(unique=true)
     private String name;
 
     @NotNull(message = "Origin is required")
     private String origin;
 
+    @NotNull(message = "Description is required")
+    @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;
 
     private List<Long> lessonIds;

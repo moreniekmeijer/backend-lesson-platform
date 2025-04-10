@@ -14,27 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.InvalidMediaTypeException;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import jakarta.transaction.Transactional;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/materials")
@@ -90,7 +74,7 @@ public class MaterialController {
     }
 
     @GetMapping("/{id}/file")
-    public ResponseEntity<Resource> getFile(@PathVariable Long id, HttpServletRequest request) {
+    public ResponseEntity<Resource> getFile(@PathVariable Long id, @RequestParam(defaultValue = "view") String action, HttpServletRequest request) {
         Resource resource = materialService.getFileFromMaterial(id);
 
         String mimeType;
@@ -101,10 +85,15 @@ public class MaterialController {
             mimeType = "application/octet-stream";
         }
 
+        String contentDisposition = "inline";
+        if ("download".equals(action)) {
+            contentDisposition = "attachment";
+        }
+
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(mimeType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition + "; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
 
@@ -116,4 +105,6 @@ public class MaterialController {
         URI location = URIUtil.createLinkAssignmentUri(id);
         return ResponseEntity.created(location).body(savedMaterial);
     }
+
+//    TODO - probleem. Er is geen getMapping nodig voor een link, maar de materials endpoint geeft nu wel een fileName mee met een niet bestaand endpoint, dit moet eigenlijk niet gebeuren wanneer het fileType LINK is
 }

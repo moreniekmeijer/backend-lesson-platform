@@ -8,7 +8,7 @@ INSERT INTO material (title, file_type, file_path, instrument, category, styles_
 VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
        ('Snardrum partij', 'VIDEO', 'Snaredrum partij.MP4', 'Snaredrum', 'Partij', 1),
        ('Maracatu Arrangement', 'PDF', 'Arrangement Maracatu.pdf', 'Diversen', 'Arrangement', 1),
-       ('Snaredrum partij (samba)', 'VIDEO', 'Snaredrum partij (samba).mp4', 'Surdo', 'Rhythm', 2),
+       ('Snaredrum partij (samba)', 'VIDEO', 'Snaredrum partij (samba).mp4', 'Snaredrum', 'Rhythm', 2),
        ('Samba Break', 'VIDEO', 'Break 1 (Samba Reggea).MOV', 'Diversen', 'Break', 2),
        ('Djembe partij 1', 'VIDEO', 'Djembe ritme 1.MP4', 'Djembe', 'Partij', 3),
        ('Djembe partij 2', 'VIDEO', 'Djembe ritme 2.MP4', 'Djembe', 'Partij', 3),
