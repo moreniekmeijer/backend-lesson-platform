@@ -48,7 +48,7 @@ public class SpringSecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers("/authenticate").permitAll() // iedereen mag inloggen
                                 .requestMatchers("/users/**").authenticated() // ingelogden mogen eigen gegevens beheren

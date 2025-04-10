@@ -38,15 +38,6 @@ public class MaterialService {
                     .orElseThrow(() -> new EntityNotFoundException("Style not found with id: " + materialInputDto.getStyleId()));
         }
 
-        // Controleer of er al een materiaal bestaat met fileType "PDF" en category "Arrangement"
-        boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
-                "arrangement", FileType.PDF, materialInputDto.getStyleId());
-
-        if (existsArrangement) {
-            // Hier kun je een uitzondering gooien of een ander gedrag kiezen
-            throw new IllegalStateException("Material with fileType 'PDF' and category 'Arrangement' already exists.");
-        }
-
         Material material = MaterialMapper.toEntity(materialInputDto, style);
 
         try {
@@ -121,11 +112,21 @@ public class MaterialService {
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
 
-        // Als de fileType LINK is, behandel het dan als een link
+//        TODO - dit moet weg, zie andere todo, een LINK moet helemaal niet meer via fileService gaan
         if (fileType == FileType.LINK) {
-            material.setFilePath(fileNameOrLink); // Voor een link, stel het filePath in als de link
+            material.setFilePath(fileNameOrLink);
         } else {
-            material.setFilePath(fileNameOrLink); // Voor bestanden, stel het filePath in als de bestandsnaam
+            material.setFilePath(fileNameOrLink);
+        }
+
+        // Check of het gaat om een PDF met category 'Arrangement'
+        if ("arrangement".equalsIgnoreCase(material.getCategory()) && fileType == FileType.PDF) {
+            boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
+                    "arrangement", FileType.PDF, material.getStyle() != null ? material.getStyle().getId() : null);
+
+            if (existsArrangement) {
+                throw new IllegalStateException("Material with fileType 'PDF' and category 'Arrangement' already exists for this style.");
+            }
         }
 
         material.setFileType(fileType);  // Stel het fileType in (VIDEO, AUDIO, PDF, LINK)

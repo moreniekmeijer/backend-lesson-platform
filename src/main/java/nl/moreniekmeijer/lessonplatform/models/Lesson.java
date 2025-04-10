@@ -16,9 +16,6 @@ public class Lesson {
     private LocalDateTime scheduledDateTime;
     private String notes;
 
-//    @Enumerated(EnumType.STRING)
-//    private LessonStatus status;
-
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "lessons_styles",

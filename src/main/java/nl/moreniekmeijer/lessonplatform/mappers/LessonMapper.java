@@ -6,6 +6,7 @@ import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LessonMapper {
     public static Lesson toEntity(LessonInputDto dto, Set<Style> styles) {
@@ -21,7 +22,12 @@ public class LessonMapper {
         responseDto.setId(lesson.getId());
         responseDto.setScheduledDateTime(lesson.getScheduledDateTime());
         responseDto.setNotes(lesson.getNotes());
-        responseDto.setStyles(lesson.getStyles());
+        responseDto.setStyleIds(
+                lesson.getStyles().stream()
+                        .map(Style::getId)
+                        .collect(Collectors.toSet())
+        );
+
         return responseDto;
     }
 

@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.dtos;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 
 public class MaterialInputDto {
@@ -8,16 +9,13 @@ public class MaterialInputDto {
     @NotBlank(message = "Title is required")
     private String title;
 
-//    TODO - Fix in frontend
-//    @NotNull(message = "FileType is required")
-    private FileType fileType;
-
     private String filePath;
 
     private String instrument;
 
     private String category;
 
+    @NotNull(message = "styleId is required")
     private Long styleId;
 
     public String getTitle() {
@@ -26,14 +24,6 @@ public class MaterialInputDto {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public FileType getFileType() {
-        return fileType;
-    }
-
-    public void setFileType(FileType fileType) {
-        this.fileType = fileType;
     }
 
     public String getFilePath() {

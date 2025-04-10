@@ -11,7 +11,7 @@ public class MaterialMapper {
     public static Material toEntity(MaterialInputDto dto, Style style) {
         Material material = new Material();
         material.setTitle(dto.getTitle());
-        material.setFileType(dto.getFileType());
+
         material.setFilePath(dto.getFilePath());
         material.setInstrument(dto.getInstrument());
         material.setStyle(style);

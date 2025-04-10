@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -30,6 +31,14 @@ public class ExceptionController {
     public ResponseEntity<Map<String, Object>> handleInvalidEnumValue(MethodArgumentTypeMismatchException ex) {
         Map<String, Object> response = new HashMap<>();
         String errorMessage = "Invalid value for enum '" + ex.getName() + "': " + ex.getValue() + ". Please provide a valid value.";
+        response.put("error", errorMessage);
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        Map<String, Object> response = new HashMap<>();
+        String errorMessage = "Er is een fout opgetreden bij het verwerken van de JSON: " + ex.getMessage();
         response.put("error", errorMessage);
         return ResponseEntity.badRequest().body(response);
     }

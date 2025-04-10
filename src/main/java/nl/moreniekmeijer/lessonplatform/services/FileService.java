@@ -82,6 +82,7 @@ public class FileService {
         }
     }
 
+//    TODO - nutteloze methode moet weg
     public FileResponseDto saveLink(String link) {
         // Als er een link is, verwerk dan de link
         return new FileResponseDto(
