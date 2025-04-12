@@ -1,8 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
 import nl.moreniekmeijer.lessonplatform.dtos.UserDetailsDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserInputDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.Authority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

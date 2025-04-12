@@ -2,14 +2,16 @@ package nl.moreniekmeijer.lessonplatform.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import nl.moreniekmeijer.lessonplatform.dtos.UserDetailsDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserInputDto;
+import nl.moreniekmeijer.lessonplatform.dtos.UserRegistrationDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
+import nl.moreniekmeijer.lessonplatform.dtos.UserUpdateDto;
 import nl.moreniekmeijer.lessonplatform.exceptions.InvalidInviteCodeException;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
 import nl.moreniekmeijer.lessonplatform.models.Authority;
 import nl.moreniekmeijer.lessonplatform.models.User;
 import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,7 @@ public class UserService {
     }
 
     // Moet anders
-    public UserResponseDto addUser(UserInputDto userInputDto) {
+    public UserResponseDto addUser(UserRegistrationDto userInputDto) {
         if (!requiredInviteCode.equals(userInputDto.getInviteCode())) {
             throw new InvalidInviteCodeException("Ongeldige registratiecode");
         }
@@ -63,14 +65,28 @@ public class UserService {
     }
 
 
-    public UserResponseDto updateUser(String username, UserInputDto userInputDto) {
+    public UserResponseDto updateUser(String username, UserUpdateDto inputDto) {
         User user = userRepository.findById(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("Gebruiker niet gevonden: " + username));
 
-        UserMapper.updateEntity(user, userInputDto);
-        User updatedUser = userRepository.save(user);
-        return UserMapper.toResponseDto(updatedUser);
+        user.setEmail(inputDto.getEmail());
+
+        if (inputDto.getPassword() != null && !inputDto.getPassword().isBlank()) {
+            if (inputDto.getCurrentPassword() == null || inputDto.getCurrentPassword().isBlank()) {
+                throw new IllegalArgumentException("Huidig wachtwoord is vereist voor wijziging.");
+            }
+
+            if (!passwordEncoder.matches(inputDto.getCurrentPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("Huidig wachtwoord is onjuist.");
+            }
+
+            user.setPassword(passwordEncoder.encode(inputDto.getPassword()));
+        }
+
+        userRepository.save(user);
+        return UserMapper.toResponseDto(user);
     }
+
 
     public void deleteUser(String username) {
         if (!userRepository.existsById(username)) {

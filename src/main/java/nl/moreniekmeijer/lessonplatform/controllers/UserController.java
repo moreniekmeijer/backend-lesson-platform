@@ -2,8 +2,9 @@ package nl.moreniekmeijer.lessonplatform.controllers;
 
 import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.AuthenticationResponse;
-import nl.moreniekmeijer.lessonplatform.dtos.UserInputDto;
+import nl.moreniekmeijer.lessonplatform.dtos.UserRegistrationDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
+import nl.moreniekmeijer.lessonplatform.dtos.UserUpdateDto;
 import nl.moreniekmeijer.lessonplatform.services.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
@@ -33,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody UserInputDto userInputDto) {
+    public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody UserRegistrationDto userInputDto) {
         UserResponseDto savedUser = userService.addUser(userInputDto);
         userService.addAuthority(savedUser.getUsername(), "ROLE_USER");
 
@@ -59,8 +60,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
     @PutMapping("/{username}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable String username, @Valid @RequestBody UserInputDto userInputDto) {
-        UserResponseDto updatedUser = userService.updateUser(username, userInputDto);
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable String username, @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        UserResponseDto updatedUser = userService.updateUser(username, userUpdateDto);
         return ResponseEntity.ok(updatedUser);
     }
 

@@ -54,7 +54,7 @@ public class LessonService {
     }
 
     public List<LessonResponseDto> getAllLessons() {
-        List<Lesson> foundLessons = lessonRepository.findAll();
+        List<Lesson> foundLessons = lessonRepository.findAllByOrderByScheduledDateTimeAsc();
         return foundLessons.stream()
                 .map(LessonMapper::toResponseDto)
                 .toList();

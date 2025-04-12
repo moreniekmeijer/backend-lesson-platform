@@ -2,7 +2,7 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 
 import jakarta.validation.constraints.NotNull;
 
-public class UserInputDto {
+public class UserRegistrationDto {
 
     @NotNull(message = "Username is required")
     private String username;
@@ -14,9 +14,6 @@ public class UserInputDto {
 
     @NotNull(message = "Invite code is required")
     private String inviteCode;
-
-    public UserInputDto() {
-    }
 
     public String getUsername() {
         return username;
