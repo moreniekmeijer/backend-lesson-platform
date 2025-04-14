@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.dtos;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class UserRegistrationDto {
 
@@ -10,6 +11,7 @@ public class UserRegistrationDto {
     private String email;
 
     @NotNull(message = "Password is required")
+    @Size(min = 8, message = "Wachtwoord moet minstens 8 tekens bevatten")
     private String password;
 
     @NotNull(message = "Invite code is required")

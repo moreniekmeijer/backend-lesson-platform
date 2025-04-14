@@ -6,6 +6,7 @@ import nl.moreniekmeijer.lessonplatform.dtos.UserRegistrationDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
 import nl.moreniekmeijer.lessonplatform.dtos.UserUpdateDto;
 import nl.moreniekmeijer.lessonplatform.exceptions.InvalidInviteCodeException;
+import nl.moreniekmeijer.lessonplatform.exceptions.UsernameAlreadyExistsException;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
 import nl.moreniekmeijer.lessonplatform.models.Authority;
 import nl.moreniekmeijer.lessonplatform.models.User;
@@ -34,6 +35,10 @@ public class UserService {
 
     // Moet anders
     public UserResponseDto addUser(UserRegistrationDto userInputDto) {
+        if (userRepository.existsById(userInputDto.getUsername())) {
+            throw new UsernameAlreadyExistsException("Deze gebruikersnaam is al in gebruik.");
+        }
+
         if (!requiredInviteCode.equals(userInputDto.getInviteCode())) {
             throw new InvalidInviteCodeException("Ongeldige registratiecode");
         }
@@ -63,7 +68,6 @@ public class UserService {
 
         return new UserDetailsDto(user.getUsername(), user.getPassword(), user.getAuthorities());
     }
-
 
     public UserResponseDto updateUser(String username, UserUpdateDto inputDto) {
         User user = userRepository.findById(username)
