@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.StyleMapper;
+import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
@@ -48,8 +49,14 @@ public class StyleService {
         return StyleMapper.toResponseDto(foundStyle);
     }
 
+    @Transactional
     public void deleteStyle(Long id) {
         Style foundStyle = styleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Style not found with id: " + id));
+
+        for (Lesson lesson : foundStyle.getLessons()) {
+            lesson.getStyles().remove(foundStyle);
+        }
+
         styleRepository.delete(foundStyle);
     }
 
@@ -58,8 +65,6 @@ public class StyleService {
         Style foundStyle = styleRepository.findById(styleId).orElseThrow(() -> new EntityNotFoundException("Style not found with id: " + styleId));
         Material foundMaterial = materialRepository.findById(materialId).orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
 
-        // Onderstaande code verwijdert de gekoppelde stijl van het gevonden materiaal.
-        // Misschien een soort waarschuwing naar de Frontend?
         if (foundMaterial.getStyle() != null) {
             foundMaterial.getStyle().getMaterials().removeIf(material -> material.getId().equals(foundMaterial.getId()));
         }

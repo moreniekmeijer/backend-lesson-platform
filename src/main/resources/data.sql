@@ -24,7 +24,7 @@ VALUES ('2025-05-20T15:00:00', 'Let goed op deze notitie!'),
 
 INSERT INTO lessons_styles (lessons_id, styles_id)
 VALUES (1, 1),
-       (1, 2),
+       (1, 3),
        (2, 2),
        (2, 3);
 
