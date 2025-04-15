@@ -6,6 +6,7 @@ import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LinkInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
+import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.services.FileService;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
@@ -100,11 +101,8 @@ public class MaterialController {
     @PostMapping("/{id}/link")
     public ResponseEntity<MaterialResponseDto> addLinkToMaterial(@PathVariable Long id, @Valid @RequestBody LinkInputDto linkInputDto) throws IOException {
         String link = linkInputDto.getLink();
-        FileResponseDto FileResponseDto = fileService.saveLink(link);
-        MaterialResponseDto savedMaterial = materialService.assignToMaterial(FileResponseDto.getFilePath(), id, FileResponseDto.getFileType());
+        MaterialResponseDto savedMaterial = materialService.assignToMaterial(link, id, FileType.LINK);
         URI location = URIUtil.createLinkAssignmentUri(id);
         return ResponseEntity.created(location).body(savedMaterial);
     }
-
-//    TODO - probleem. Er is geen getMapping nodig voor een link, maar de materials endpoint geeft nu wel een fileName mee met een niet bestaand endpoint, dit moet eigenlijk niet gebeuren wanneer het fileType LINK is
 }

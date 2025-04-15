@@ -14,7 +14,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
 
-import java.beans.Transient;
 import java.util.List;
 
 @Service
@@ -31,7 +30,6 @@ public class MaterialService {
     }
 
     public MaterialResponseDto addMaterial(MaterialInputDto materialInputDto) {
-        // Style ophalen (als die bestaat)
         Style style = null;
         if (materialInputDto.getStyleId() != null) {
             style = styleRepository.findById(materialInputDto.getStyleId())
@@ -62,9 +60,9 @@ public class MaterialService {
 
         if (fileType != null && !fileType.isEmpty()) {
             try {
-                FileType fileTypeEnum = FileType.valueOf(fileType.toUpperCase()); // Zet om naar ENUM
+                FileType fileTypeEnum = FileType.valueOf(fileType.toUpperCase());
                 foundMaterials = foundMaterials.stream()
-                        .filter(m -> m.getFileType() == fileTypeEnum) // Vergelijk ENUM direct
+                        .filter(m -> m.getFileType() == fileTypeEnum)
                         .toList();
             } catch (IllegalArgumentException e) {
                 System.out.println("Ongeldig bestandstype: " + fileType);
@@ -112,14 +110,8 @@ public class MaterialService {
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
 
-//        TODO - dit moet weg, zie andere todo, een LINK moet helemaal niet meer via fileService gaan
-        if (fileType == FileType.LINK) {
-            material.setFilePath(fileNameOrLink);
-        } else {
-            material.setFilePath(fileNameOrLink);
-        }
+        material.setFilePath(fileNameOrLink);
 
-        // Check of het gaat om een PDF met category 'Arrangement'
         if ("arrangement".equalsIgnoreCase(material.getCategory()) && fileType == FileType.PDF) {
             boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
                     "arrangement", FileType.PDF, material.getStyle() != null ? material.getStyle().getId() : null);
@@ -129,26 +121,23 @@ public class MaterialService {
             }
         }
 
-        material.setFileType(fileType);  // Stel het fileType in (VIDEO, AUDIO, PDF, LINK)
+        material.setFileType(fileType);
 
-        // Update het Material in de database
         Material updatedMaterial = materialRepository.save(material);
 
-        // Retourneer het resultaat
         return MaterialMapper.toResponseDto(updatedMaterial);
     }
 
     @Transactional
-    public Resource getFileFromMaterial (Long id) {
+    public Resource getFileFromMaterial(Long id) {
         Material foundMaterial = materialRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
 
         if (foundMaterial.getFileType() == FileType.LINK) {
-            throw new EntityNotFoundException("Link found");
+            throw new IllegalStateException("Cannot download a LINK type material.");
         }
 
         String fileName = foundMaterial.getFilePath();
-
         return fileService.downloadFile(fileName);
     }
 }

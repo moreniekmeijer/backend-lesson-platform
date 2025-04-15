@@ -10,7 +10,6 @@ import nl.moreniekmeijer.lessonplatform.models.Material;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class StyleMapper {
     public static Style toEntity(StyleInputDto dto) {
@@ -43,8 +42,8 @@ public class StyleMapper {
 
         responseDto.setLinks(
                 materialResponseDtos.stream()
-                        .filter(dto -> dto.getFilePath() != null && dto.getFileType().name().equals("LINK"))
-                        .map(MaterialResponseDto::getFilePath)
+                        .filter(dto -> dto.getFileType() == FileType.LINK)
+                        .map(MaterialResponseDto::getFileLink)
                         .filter(Objects::nonNull)
                         .toList()
         );

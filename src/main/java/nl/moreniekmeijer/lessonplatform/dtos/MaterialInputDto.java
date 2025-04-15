@@ -2,14 +2,11 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import nl.moreniekmeijer.lessonplatform.models.FileType;
 
 public class MaterialInputDto {
 
     @NotBlank(message = "Title is required")
     private String title;
-
-    private String filePath;
 
     private String instrument;
 
@@ -24,14 +21,6 @@ public class MaterialInputDto {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
     }
 
     public String getInstrument() {

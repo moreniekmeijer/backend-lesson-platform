@@ -36,7 +36,6 @@ public class StyleService {
         }
     }
 
-    // TODO - Onderstaande methode uitbouwen met bepaalde RequestParam's?
     public List<StyleResponseDto> getAllStyles() {
         List<Style> styles = styleRepository.findAll();
         return styles.stream()
