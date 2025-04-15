@@ -9,14 +9,15 @@ VALUES ('Maracatu', 'Brazil',
 -- TODO - needs to be updated with material in /uploads
 INSERT INTO material (title, file_type, file_path, instrument, category, styles_id)
 VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
-       ('Snardrum partij', 'VIDEO', 'Snaredrum partij.MP4', 'Snaredrum', 'Partij', 1),
+       ('Snaredrum partij (maracatu)', 'VIDEO', 'Snaredrum partij.MP4', 'Snaredrum', 'Partij', 1),
        ('Maracatu Arrangement', 'PDF', 'Arrangement Maracatu.pdf', 'Diversen', 'Arrangement', 1),
        ('Snaredrum partij (samba)', 'VIDEO', 'Snaredrum partij (samba).mp4', 'Snaredrum', 'Rhythm', 2),
        ('Samba Break', 'VIDEO', 'Break 1 (Samba Reggea).MOV', 'Diversen', 'Break', 2),
+       ('Samba Video', 'LINK', 'https://www.youtube.com/watch?v=h_W6ho5RW-g&t=341s&pp=ygUMc2FtYmEgcmVnZ2Fl', 'Diversen', 'Voorbeeld', 2),
        ('Djembe partij 1', 'VIDEO', 'Djembe ritme 1.MP4', 'Djembe', 'Partij', 3),
        ('Djembe partij 2', 'VIDEO', 'Djembe ritme 2.MP4', 'Djembe', 'Partij', 3),
        ('Makru Arrangement', 'PDF', 'Arrangement Makru.pdf', 'Diversen', 'Arrangement', 3),
-       ('Cool Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Djembe', 'Voorbeeld', 3);
+       ('Cool Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Diversen', 'Voorbeeld', 3);
 
 INSERT INTO lessons (scheduled_date_time, notes)
 VALUES ('2025-05-20T15:00:00', 'Let goed op deze notitie!'),
