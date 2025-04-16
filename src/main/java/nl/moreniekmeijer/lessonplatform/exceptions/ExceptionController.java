@@ -28,9 +28,10 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidEnumValue(MethodArgumentTypeMismatchException ex) {
+    public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         Map<String, Object> response = new HashMap<>();
-        String errorMessage = "Invalid value for enum '" + ex.getName() + "': " + ex.getValue() + ". Please provide a valid value.";
+        String errorMessage = "Ongeldige waarde voor parameter '" + ex.getName() + "': " + ex.getValue() +
+                ". Verwacht type: " + (ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "onbekend") + ".";
         response.put("error", errorMessage);
         return ResponseEntity.badRequest().body(response);
     }

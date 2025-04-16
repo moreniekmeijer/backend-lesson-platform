@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class MaterialService {
@@ -59,14 +60,10 @@ public class MaterialService {
         }
 
         if (fileType != null && !fileType.isEmpty()) {
-            try {
-                FileType fileTypeEnum = FileType.valueOf(fileType.toUpperCase());
-                foundMaterials = foundMaterials.stream()
-                        .filter(m -> m.getFileType() == fileTypeEnum)
-                        .toList();
-            } catch (IllegalArgumentException e) {
-                System.out.println("Ongeldig bestandstype: " + fileType);
-            }
+            FileType fileTypeEnum = FileType.valueOf(fileType.toUpperCase(Locale.ROOT));
+            foundMaterials = foundMaterials.stream()
+                    .filter(m -> m.getFileType() == fileTypeEnum)
+                    .toList();
         }
 
         if (instrument != null && !instrument.isEmpty()) {

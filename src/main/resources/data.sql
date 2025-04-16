@@ -17,7 +17,7 @@ VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
        ('Djembe partij 1', 'VIDEO', 'Djembe ritme 1.MP4', 'Djembe', 'Partij', 3),
        ('Djembe partij 2', 'VIDEO', 'Djembe ritme 2.MP4', 'Djembe', 'Partij', 3),
        ('Makru Arrangement', 'PDF', 'Arrangement Makru.pdf', 'Diversen', 'Arrangement', 3),
-       ('Cool Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Diversen', 'Voorbeeld', 3);
+       ('Coole Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Diversen', 'Voorbeeld', 3);
 
 INSERT INTO lessons (scheduled_date_time, notes)
 VALUES ('2025-05-20T15:00:00', 'Let goed op deze notitie!'),

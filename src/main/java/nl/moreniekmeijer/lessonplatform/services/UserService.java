@@ -33,7 +33,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Moet anders
     public UserResponseDto addUser(UserRegistrationDto userInputDto) {
         if (userRepository.existsById(userInputDto.getUsername())) {
             throw new UsernameAlreadyExistsException("Deze gebruikersnaam is al in gebruik.");
