@@ -50,10 +50,10 @@ public class SpringSecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                                .requestMatchers("/authenticate").permitAll() // iedereen mag inloggen
-                                .requestMatchers("/users/**").authenticated() // ingelogden mogen eigen gegevens beheren
-                                .requestMatchers(HttpMethod.GET, "/**").authenticated() // ingelogden mogen alles GET-en
-                                .requestMatchers("/**").hasRole("ADMIN") // alleen admin mag de rest (POST/PUT/DELETE etc.)
+                                .requestMatchers("/authenticate").permitAll()
+                                .requestMatchers("/users/**").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/**").authenticated()
+                                .requestMatchers("/**").hasRole("ADMIN")
                                 .anyRequest().denyAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

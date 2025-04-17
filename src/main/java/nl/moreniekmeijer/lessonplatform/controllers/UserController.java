@@ -9,7 +9,6 @@ import nl.moreniekmeijer.lessonplatform.services.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import nl.moreniekmeijer.lessonplatform.exceptions.BadRequestException;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,7 +58,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(username));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
+    @PreAuthorize("#username == authentication.name")
     @PutMapping("/{username}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable String username, @Valid @RequestBody UserUpdateDto userUpdateDto) {
         UserResponseDto updatedUser = userService.updateUser(username, userUpdateDto);
@@ -85,7 +84,7 @@ public class UserController {
         try {
             String authorityName = (String) authorities.get("authority");
             userService.addAuthority(username, authorityName);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("Authority added to user: " + username);
         }
         catch (Exception ex) {
             throw new BadRequestException("Could not add authority to user");

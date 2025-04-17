@@ -99,21 +99,27 @@ public class UserService {
     }
 
     public Set<Authority> getAuthorities(String username) {
-        if (!userRepository.existsById(username)) throw new EntityNotFoundException("User not found with username: " + username);
+        if (!userRepository.existsById(username)) {
+            throw new EntityNotFoundException("User not found with username: " + username);
+        }
         User user = userRepository.findById(username).get();
         UserResponseDto userResponseDto = UserMapper.toResponseDto(user);
         return userResponseDto.getAuthorities();
     }
 
     public void addAuthority(String username, String authority) {
-        if (!userRepository.existsById(username)) throw new EntityNotFoundException("User not found with username: " + username);
+        if (!userRepository.existsById(username)) {
+            throw new EntityNotFoundException("User not found with username: " + username);
+        }
         User user = userRepository.findById(username).get();
         user.addAuthority(new Authority(username, authority));
         userRepository.save(user);
     }
 
     public void removeAuthority(String username, String authority) {
-        if (!userRepository.existsById(username)) throw new EntityNotFoundException("User not found with username: " + username);
+        if (!userRepository.existsById(username)) {
+            throw new EntityNotFoundException("User not found with username: " + username);
+        }
         User user = userRepository.findById(username).get();
         Authority authorityToRemove = user.getAuthorities().stream().filter((a) -> a.getAuthority().equalsIgnoreCase(authority)).findAny().get();
         user.removeAuthority(authorityToRemove);
