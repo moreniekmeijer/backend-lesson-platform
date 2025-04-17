@@ -67,4 +67,12 @@ public class LessonService {
                 .orElseThrow(() -> new EntityNotFoundException("No upcoming lessons found"));
         return LessonMapper.toResponseDto(nextLesson);
     }
+
+    public void deleteLesson(Long id) {
+        Lesson foundLesson = lessonRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Lesson not found with id: " + id));
+        foundLesson.getStyles().clear();
+        lessonRepository.save(foundLesson);
+        lessonRepository.delete(foundLesson);
+    }
 }

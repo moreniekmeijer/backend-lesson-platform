@@ -37,4 +37,10 @@ public class LessonController {
     public ResponseEntity<LessonResponseDto> getNextLesson() {
         return ResponseEntity.ok(lessonService.getNextLesson());
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLesson(@PathVariable Long id) {
+        lessonService.deleteLesson(id);
+        return ResponseEntity.noContent().build();
+    }
 }
