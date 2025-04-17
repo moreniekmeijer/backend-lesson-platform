@@ -4,6 +4,7 @@ import nl.moreniekmeijer.lessonplatform.filter.JwtRequestFilter;
 import nl.moreniekmeijer.lessonplatform.services.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -48,7 +49,6 @@ public class SpringSecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers("/authenticate").permitAll() // iedereen mag inloggen
                                 .requestMatchers("/users/**").authenticated() // ingelogden mogen eigen gegevens beheren

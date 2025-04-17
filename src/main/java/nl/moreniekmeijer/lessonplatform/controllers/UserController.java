@@ -9,6 +9,7 @@ import nl.moreniekmeijer.lessonplatform.services.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import nl.moreniekmeijer.lessonplatform.exceptions.BadRequestException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
