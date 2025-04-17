@@ -4,9 +4,11 @@ import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonResponseDto;
 import nl.moreniekmeijer.lessonplatform.services.LessonService;
+import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -22,7 +24,8 @@ public class LessonController {
     @PostMapping
     public ResponseEntity<LessonResponseDto> createLesson(@Valid @RequestBody LessonInputDto lessonInputDto) {
         LessonResponseDto createdLesson = lessonService.createLesson(lessonInputDto);
-        return ResponseEntity.ok(createdLesson);
+        URI location = URIUtil.createResourceUri(createdLesson.getId());
+        return ResponseEntity.created(location).body(createdLesson);
     }
 
     @GetMapping

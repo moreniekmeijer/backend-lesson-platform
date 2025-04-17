@@ -85,5 +85,4 @@ public class ExceptionController {
         response.put("error", ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-
 }

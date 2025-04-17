@@ -1,9 +1,9 @@
-package nl.moreniekmeijer.lessonplatform.controllers;
+package nl.moreniekmeijer.lessonplatform.integrationTests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import nl.moreniekmeijer.lessonplatform.LessonPlatformApplication;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.filter.JwtRequestFilter;
+import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.LessonRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
@@ -15,26 +15,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-@SpringBootTest(classes = LessonPlatformApplication.class)
-@AutoConfigureMockMvc
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-//@ComponentScan(basePackages = "nl.moreniekmeijer.lessonplatform") // Pas aan naar jouw root package
 class MaterialControllerIntegrationTest {
 
     @MockBean
@@ -59,6 +52,7 @@ class MaterialControllerIntegrationTest {
     private LessonRepository lessonRepository;
 
     private Long styleId;
+    private String styleName;
 
     @BeforeEach
     void setUp() {
@@ -71,11 +65,11 @@ class MaterialControllerIntegrationTest {
         style.setOrigin("Brazil");
         style = styleRepository.save(style);
         styleId = style.getId();
+        styleName = style.getName();
     }
 
     @Test
-    @WithMockUser(username = "user", roles = "USER")
-    void testAddMaterial_andThenGetAllMaterials() throws Exception {
+    void testAddMaterial_returnsCreatedMaterial() throws Exception {
         MaterialInputDto dto = new MaterialInputDto();
         dto.setTitle("Test Material");
         dto.setInstrument("Surdo");
@@ -89,8 +83,18 @@ class MaterialControllerIntegrationTest {
                 .andExpect(jsonPath("$.title").value("Test Material"))
                 .andExpect(jsonPath("$.instrument").value("Surdo"))
                 .andExpect(jsonPath("$.category").value("Break"))
-                .andExpect(jsonPath("$.styleId").value(styleId))
-                        .andDo(print());
+                .andExpect(jsonPath("$.styleName").value("Baiao"))
+                .andDo(print());
+    }
+
+    @Test
+    void testGetAllMaterials_returnsListWithExpectedMaterial() throws Exception {
+        Material material = new Material();
+        material.setTitle("Test Material");
+        material.setInstrument("Surdo");
+        material.setCategory("Break");
+        material.setStyle(styleRepository.findById(styleId).orElse(null));
+        materialRepository.save(material);
 
         mockMvc.perform(get("/materials"))
                 .andExpect(status().isOk())
@@ -98,6 +102,7 @@ class MaterialControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].title").value("Test Material"))
                 .andExpect(jsonPath("$[0].instrument").value("Surdo"))
                 .andExpect(jsonPath("$[0].category").value("Break"))
-                .andExpect(jsonPath("$[0].styleId").value(styleId));
+                .andExpect(jsonPath("$[0].styleName").value(styleName));
     }
+
 }

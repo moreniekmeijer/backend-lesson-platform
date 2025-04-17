@@ -12,6 +12,7 @@ public class MaterialMapper {
         Material material = new Material();
         material.setTitle(dto.getTitle());
         material.setInstrument(dto.getInstrument());
+        material.setCategory(dto.getCategory());
         material.setStyle(style);
         return material;
     }
