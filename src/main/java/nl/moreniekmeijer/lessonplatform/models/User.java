@@ -27,6 +27,14 @@ public class User {
             fetch = FetchType.EAGER)
     private Set<Authority> authorities = new HashSet<>();
 
+    @ManyToMany
+    @JoinTable(
+            name = "user_materials",
+            joinColumns = @JoinColumn(name = "username"),
+            inverseJoinColumns = @JoinColumn(name = "material_id")
+    )
+    private Set<Material> savedMaterials = new HashSet<>();
+
     public User() {
     }
 
@@ -71,5 +79,17 @@ public class User {
 
     public void removeAuthority(Authority authority) {
         this.authorities.remove(authority);
+    }
+
+    public void addMaterial(Material material) {
+        savedMaterials.add(material);
+    }
+
+    public void removeMaterial(Material material) {
+        savedMaterials.remove(material);
+    }
+
+    public Set<Material> getSavedMaterials() {
+        return savedMaterials;
     }
 }

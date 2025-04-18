@@ -1,10 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
 import jakarta.validation.Valid;
-import nl.moreniekmeijer.lessonplatform.dtos.AuthenticationResponse;
-import nl.moreniekmeijer.lessonplatform.dtos.UserRegistrationDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserUpdateDto;
+import nl.moreniekmeijer.lessonplatform.dtos.*;
 import nl.moreniekmeijer.lessonplatform.services.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
@@ -95,6 +92,31 @@ public class UserController {
     @DeleteMapping(value = "/{username}/authorities/{authority}")
     public ResponseEntity<Object> deleteUserAuthority(@PathVariable("username") String username, @PathVariable("authority") String authority) {
         userService.removeAuthority(username, authority);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("#username == authentication.name")
+    @PutMapping("/{username}/materials/{materialId}")
+    public ResponseEntity<Void> assignMaterialToUser(
+            @PathVariable String username,
+            @PathVariable Long materialId) {
+        userService.assignMaterialToUser(username, materialId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("#username == authentication.name")
+    @GetMapping("/{username}/materials")
+    public ResponseEntity<List<MaterialResponseDto>> getSavedMaterials(@PathVariable String username) {
+        List<MaterialResponseDto> savedMaterials = userService.getSavedMaterials(username);
+        return ResponseEntity.ok(savedMaterials);
+    }
+
+    @PreAuthorize("#username == authentication.name")
+    @DeleteMapping("/{username}/materials/{materialId}")
+    public ResponseEntity<Void> removeMaterialFromUser(
+            @PathVariable String username,
+            @PathVariable Long materialId) {
+        userService.removeMaterialFromUser(username, materialId);
         return ResponseEntity.noContent().build();
     }
 }

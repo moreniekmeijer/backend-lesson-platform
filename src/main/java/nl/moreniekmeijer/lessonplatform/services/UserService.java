@@ -1,15 +1,15 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
 import jakarta.persistence.EntityNotFoundException;
-import nl.moreniekmeijer.lessonplatform.dtos.UserDetailsDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserRegistrationDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
-import nl.moreniekmeijer.lessonplatform.dtos.UserUpdateDto;
+import nl.moreniekmeijer.lessonplatform.dtos.*;
 import nl.moreniekmeijer.lessonplatform.exceptions.InvalidInviteCodeException;
 import nl.moreniekmeijer.lessonplatform.exceptions.UsernameAlreadyExistsException;
+import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
 import nl.moreniekmeijer.lessonplatform.models.Authority;
+import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.User;
+import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,13 +24,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MaterialRepository materialRepository;
 
     @Value("${invite.code}")
     private String requiredInviteCode;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MaterialRepository materialRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.materialRepository = materialRepository;
     }
 
     public UserResponseDto addUser(UserRegistrationDto userInputDto) {
@@ -123,6 +125,37 @@ public class UserService {
         User user = userRepository.findById(username).get();
         Authority authorityToRemove = user.getAuthorities().stream().filter((a) -> a.getAuthority().equalsIgnoreCase(authority)).findAny().get();
         user.removeAuthority(authorityToRemove);
+        userRepository.save(user);
+    }
+
+    public void assignMaterialToUser(String username, Long materialId) {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new RuntimeException("Material not found"));
+
+        user.addMaterial(material);
+        userRepository.save(user);
+    }
+
+    public List<MaterialResponseDto> getSavedMaterials(String username) {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user.getSavedMaterials().stream()
+                .map(MaterialMapper::toResponseDto)
+                .toList();
+    }
+
+    public void removeMaterialFromUser(String username, Long materialId) {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new RuntimeException("Material not found"));
+
+        user.removeMaterial(material);
         userRepository.save(user);
     }
 }

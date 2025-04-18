@@ -3,6 +3,9 @@ package nl.moreniekmeijer.lessonplatform.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "material")
 public class Material {
@@ -25,6 +28,11 @@ public class Material {
     @JoinColumn(name = "styles_id")
     @JsonIgnore
     private Style style;
+
+    @ManyToMany(mappedBy = "savedMaterials")
+    @JsonIgnore
+    private Set<User> users = new HashSet<>();
+
 
     public Material() {
     }
