@@ -33,7 +33,6 @@ public class Material {
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 
-
     public Material() {
     }
 

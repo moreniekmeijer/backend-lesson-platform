@@ -33,12 +33,12 @@ public class FileService {
     public FileResponseDto saveFile(MultipartFile file) throws IOException {
         String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String extension = originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
-        String mimeType = getMimeType(file, extension);
+        String mimeType = getMimeType(extension);
 
         FileType fileType = switch (extension) {
             case "pdf" -> FileType.PDF;
             case "mp4", "mov" -> FileType.VIDEO;
-            case "mp3" -> FileType.AUDIO;
+            case "jpeg", "jpg", "png" -> FileType.IMAGE;
             default -> throw new IllegalArgumentException("Unsupported file type.");
         };
 
@@ -70,11 +70,13 @@ public class FileService {
         }
     }
 
-    private String getMimeType(MultipartFile file, String extension) {
+    private String getMimeType(String extension) {
         return switch (extension) {
             case "pdf" -> "application/pdf";
             case "mp4" -> "video/mp4";
-            case "mp3" -> "audio/mpeg";
+            case "mov" -> "video/quicktime";
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
             default -> "application/octet-stream";
         };
     }
