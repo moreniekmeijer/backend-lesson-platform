@@ -1,7 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.LessonMapper;

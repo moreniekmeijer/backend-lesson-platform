@@ -4,12 +4,13 @@
 1. [Introduction](#1-introduction)
 2. [Tech Requirements](#2-tech-requirements)
 3. [Setup Steps](#3-setup-steps)
-4. [Database Configuration](#4-database-configuration)
-5. [Application Properties](#5-application-properties)
-6. [Test Roles](#6-test-roles)
-7. [Authentication](#7-authentication)
-8. [API Documentation](#8-api-documentation)
-9. [More](#9-more)
+4. [Folder Structure](#4-folder-structure)
+5. [Database Configuration](#5-database-configuration)
+6. [Application Properties](#6-application-properties)
+7. [Test Roles](#7-test-roles)
+8. [Authentication](#8-authentication)
+9. [API Documentation](#9-api-documentation)
+10. [What Next?](#10-what-next)
 
 ---
 
@@ -40,11 +41,11 @@ Make sure the following tools are installed:
 ### Option A: Download ZIP
 - Download the ZIP file provided with the source code
 - Extract it to your preferred directory
-- Open it in IntelliJ IDEA as a Maven/Gradle project
+- Open it in IntelliJ IDEA as a Maven project
 
-### Option B: Clone Repository (if hosted)
+### Option B: Clone Repository
 ```bash
-git clone https://github.com/yourusername/lesson-platform.git
+git clone https://github.com/moreniekmeijer/lesson-platform.git
 cd lesson-platform
 ```
 
@@ -59,7 +60,13 @@ cd lesson-platform
 
 ---
 
-## 4. Database Configuration
+## 4. Project Structure
+
+For a complete view of the project structure, visit this link: `https://githubtree.mgks.dev/repo/moreniekmeijer/backend-lesson-platform/main/`
+
+---
+
+## 5. Database Configuration
 
 1. Open **pgAdmin 4**
 2. Connect to your server
@@ -68,7 +75,7 @@ cd lesson-platform
 
 ---
 
-## 5. Application Properties
+## 6. Application Properties
 
 Edit `src/main/resources/application.properties`:
 
@@ -108,7 +115,7 @@ To generate a strong JWT secret (to be placed in `YOUR_SECRET`), you can use Ran
 
 ---
 
-## 6. Test Roles
+## 7. Test Roles
 
 | Role  | Username | Email         | Password |
 |-------|----------|---------------|----------|
@@ -117,7 +124,7 @@ To generate a strong JWT secret (to be placed in `YOUR_SECRET`), you can use Ran
 
 ---
 
-## 7. Authentication
+## 8. Authentication
 
 This API uses JWT (JSON Web Token) for stateless authentication.
 
@@ -146,7 +153,7 @@ If you downloaded the **[Postman Docs 🔗](https://documenter.getpostman.com/vi
 
 ---
 
-## 8. API Documentation
+## 9. API Documentation
 
 The full API documentation is available in Postman:  
 **[Postman Docs 🔗](https://documenter.getpostman.com/view/41365945/2sB2cd4yGR)**
@@ -185,316 +192,10 @@ The full API documentation is available in Postman:
 
 ---
 
-## 9. More
+## 10. What Next?
 
-For the **Dutch version** of this documentation in PDF format, see [Installatiehandleiding (NL)](link-to-pdf).
+After you successfully run the backend for the Lesson Platform, head over to the [Frontend](https://github.com/moreniekmeijer/frontend-lesson-platform) to start testing the backend in combination with the frontend.
 
 ---
 
 Feel free to open issues or suggestions for improvements!
-
-[//]: # (# 📘 API Documentatie – Lesson Platform)
-
-[//]: # ()
-[//]: # (Deze documentatie beschrijft de beschikbare endpoints voor de backend van het lesplatform.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (## /users)
-
-[//]: # ()
-[//]: # (**Beschrijving:** Endpoints voor gebruikersbeheer: registratie, ophalen, bijwerken en verwijderen van gebruikers.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /users)
-
-[//]: # (Registreer een nieuwe gebruiker. Iedereen mag deze endpoint aanroepen zonder authenticatie. Een JWT wordt direct teruggegeven na succesvolle registratie.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /users)
-
-[//]: # (Ophalen van een lijst met alle geregistreerde gebruikers. Alleen beschikbaar voor beheerders &#40;ROLE_ADMIN&#41;.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /users/{username})
-
-[//]: # (Bekijk gegevens van een specifieke gebruiker. Alleen toegankelijk voor de gebruiker zelf of een beheerder.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### PUT /users/{username})
-
-[//]: # (Werk gebruikersgegevens bij. Alleen de gebruiker zelf mag dit uitvoeren.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### DELETE /users/{username})
-
-[//]: # (Verwijder een gebruiker. Alleen de gebruiker zelf of een beheerder mag dit uitvoeren.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /users/{username}/authorities)
-
-[//]: # (Haal alle rollen &#40;authorities&#41; van een gebruiker op. Alleen beschikbaar voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /users/{username}/authorities)
-
-[//]: # (Voeg een rol toe aan een gebruiker. Alleen beschikbaar voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### DELETE /users/{username}/authorities/{authority})
-
-[//]: # (Verwijder een specifieke rol van een gebruiker. Alleen beschikbaar voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### PUT /users/{username}/materials/{materialId})
-
-[//]: # (Koppel een specifiek lesmateriaal aan een gebruiker. Alleen de gebruiker zelf mag dit uitvoeren.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /users/{username}/materials)
-
-[//]: # (Haal alle opgeslagen materialen op voor de ingelogde gebruiker. Alleen de gebruiker zelf mag dit uitvoeren.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### DELETE /users/{username}/materials/{materialId})
-
-[//]: # (Verwijder een gekoppeld lesmateriaal uit het overzicht van de gebruiker. Alleen de gebruiker zelf mag dit uitvoeren.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (## /materials)
-
-[//]: # ()
-[//]: # (**Beschrijving:** Endpoints voor het beheren van lesmateriaal zoals video's, PDF's of audiofragmenten.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /materials)
-
-[//]: # (Voeg een nieuw lesmateriaal toe. Alleen toegankelijk voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /materials)
-
-[//]: # (Haal een overzicht op van alle lesmaterialen. Alleen beschikbaar voor geauthenticeerde gebruikers.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /materials/{id})
-
-[//]: # (Haal de details op van een specifiek lesmateriaal.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /materials/{id}/file)
-
-[//]: # (Upload een bestand &#40;zoals video of PDF&#41; bij een bestaand lesmateriaal. Alleen beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /materials/{id}/file)
-
-[//]: # (Download het bestand dat is gekoppeld aan het materiaal.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /materials/{id}/file?action=download)
-
-[//]: # (Download het bestand forcerend als download &#40;met content-disposition&#41;.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /materials/{id}/link)
-
-[//]: # (Koppel een externe link aan het lesmateriaal.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /materials?origin={country})
-
-[//]: # (Haal alle materialen op, gefilterd op het land van herkomst.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### DELETE /materials/{id})
-
-[//]: # (Verwijder een specifiek lesmateriaal. Alleen voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (## /styles)
-
-[//]: # ()
-[//]: # (**Beschrijving:** Endpoints voor het beheren van muziekstijlen. Denk aan genres zoals samba, makru of maracatu.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /styles)
-
-[//]: # (Voeg een nieuwe stijl toe. Alleen toegankelijk voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /styles)
-
-[//]: # (Haal een lijst op van alle beschikbare stijlen.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /styles/{id})
-
-[//]: # (Haal de details op van één stijl via ID.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### DELETE /styles/{id})
-
-[//]: # (Verwijder een stijl. Alleen voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### PUT /styles/{styleId}/materials/{materialId})
-
-[//]: # (Koppel bestaand lesmateriaal aan een stijl. Alleen toegankelijk voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (## /lessons)
-
-[//]: # ()
-[//]: # (**Beschrijving:** Endpoints voor het beheren van lessen, hun tijdstip, notities en bijbehorende stijlen.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /lessons)
-
-[//]: # (Plan een nieuwe les in. Alleen voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /lessons)
-
-[//]: # (Haal alle geplande lessen op. Alleen toegankelijk voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /lessons/next)
-
-[//]: # (Haal de eerstvolgende les op &#40;volgende op datum/tijd&#41;.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /lessons/{id})
-
-[//]: # (Verwijder een geplande les op basis van ID. Alleen voor beheerders.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (## /authenticate)
-
-[//]: # ()
-[//]: # (**Beschrijving:** Endpoints voor authenticatie en tokenvalidatie.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /authenticate &#40;admin&#41;)
-
-[//]: # (Login als admin-gebruiker. JWT-token wordt teruggegeven.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### POST /authenticate &#40;user&#41;)
-
-[//]: # (Login als normale gebruiker. JWT-token wordt teruggegeven.)
-
-[//]: # ()
-[//]: # (---)
-
-[//]: # ()
-[//]: # (### GET /authenticated)
-
-[//]: # (Controleer of de huidige JWT geldig is.)

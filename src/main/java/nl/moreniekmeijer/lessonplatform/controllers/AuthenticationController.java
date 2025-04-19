@@ -3,7 +3,6 @@ package nl.moreniekmeijer.lessonplatform.controllers;
 import nl.moreniekmeijer.lessonplatform.dtos.AuthenticationRequest;
 import nl.moreniekmeijer.lessonplatform.dtos.AuthenticationResponse;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,9 +29,6 @@ public class AuthenticationController {
 
     @GetMapping("/authenticated")
     public ResponseEntity<Object> authenticated(Authentication authentication, Principal principal) {
-        System.out.println(authentication);
-        System.out.println(principal);
-
         return ResponseEntity.ok().body(principal);
     }
 
