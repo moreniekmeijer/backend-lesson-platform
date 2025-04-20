@@ -55,8 +55,9 @@ cd lesson-platform
 3. Start PostgreSQL (via pgAdmin or CLI)
 4. Create a new database called `lesson-platform`
 5. Run the application
-6. Check if the application created a folder 'uploads' 
-7. This folder can be pre-filled with the items in the 'uploads' map in the attached ZIP file
+6. Check if the application created a folder 'uploads'
+7. If not; you can add this folder manually from the attached ZIP file
+8. If so; This folder can be pre-filled with the items in the 'uploads' folder in the attached ZIP file
 
 ---
 
@@ -121,6 +122,8 @@ To generate a strong JWT secret (to be placed in `YOUR_SECRET`), you can use Ran
 |-------|----------|---------------|----------|
 | USER  | user     | user@test.nl  | password |
 | ADMIN | admin    | admin@test.nl | password |
+
+If you want to register a new user, you should use the invite.code: 'lekkerwaterdichtregistreren'.
 
 ---
 

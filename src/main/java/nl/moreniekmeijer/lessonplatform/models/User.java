@@ -31,7 +31,7 @@ public class User {
     @JoinTable(
             name = "users_materials",
             joinColumns = @JoinColumn(name = "username"),
-            inverseJoinColumns = @JoinColumn(name = "material_id")
+            inverseJoinColumns = @JoinColumn(name = "materials_id")
     )
     private Set<Material> savedMaterials = new HashSet<>();
 

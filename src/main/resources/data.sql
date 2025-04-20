@@ -6,7 +6,6 @@ VALUES ('Maracatu', 'Brazil',
        ('Makru', 'Africa',
         'Makru is een Afrikaanse muziekstijl uit de Gambiaanse en Senegalese regio, vaak geassocieerd met de Mandinka-cultuur. Het is een ritmische en percussieve muziek die wordt gespeeld met instrumenten zoals de djembe, balafon en dunun (trommels). Makru is zowel een dans als een ritueel, met een focus op herhalende, complexe ritmes die de verbondenheid met de natuur en de voorouders weerspiegelen. Het wordt vaak uitgevoerd tijdens ceremonies en feesten.');
 
--- TODO - needs to be updated with material in /uploads
 INSERT INTO material (title, file_type, file_path, instrument, category, styles_id)
 VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
        ('Snaredrum partij (maracatu)', 'VIDEO', 'Snaredrum partij.MP4', 'Snaredrum', 'Partij', 1),
@@ -17,7 +16,7 @@ VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
        ('Djembe partij 1', 'VIDEO', 'Djembe ritme 1.MP4', 'Djembe', 'Partij', 3),
        ('Djembe partij 2', 'VIDEO', 'Djembe ritme 2.MP4', 'Djembe', 'Partij', 3),
        ('Makru Arrangement', 'PDF', 'Arrangement Makru.pdf', 'Diversen', 'Arrangement', 3),
-       ('Coole Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Diversen', 'Voorbeeld', 3);
+       ('Leuke Djembe Video', 'LINK', 'https://www.youtube.com/watch?v=kFCaadAF6X0', 'Diversen', 'Voorbeeld', 3);
 
 INSERT INTO lessons (scheduled_date_time, notes)
 VALUES ('2025-05-20T15:00:00', 'Let goed op deze notitie!'),
@@ -32,6 +31,10 @@ VALUES (1, 1),
 INSERT INTO users (username, password, email)
 VALUES ('admin', '$2a$12$MNoFFXXaTC2COC86QX3Axez0HOo6hTKOESSgGcMbIE/mj9I5diHn6', 'admin@test.nl'),
        ('user', '$2a$12$MNoFFXXaTC2COC86QX3Axez0HOo6hTKOESSgGcMbIE/mj9I5diHn6', 'user@test.nl');
+
+INSERT INTO users_materials (username, materials_id)
+VALUES ('admin', 1),
+       ('admin', 5);
 
 INSERT INTO authorities (username, authority)
 VALUES ('admin', 'ROLE_USER'),
