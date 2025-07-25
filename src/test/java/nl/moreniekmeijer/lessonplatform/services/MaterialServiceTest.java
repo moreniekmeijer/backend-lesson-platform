@@ -74,6 +74,22 @@ class MaterialServiceTest {
     }
 
     @Test
+    void addMaterial_shouldWorkWithoutStyleId() {
+        MaterialInputDto input = new MaterialInputDto();
+        input.setTitle("No Style Title");
+        input.setStyleId(null);
+        Material material = new Material();
+        Material saved = new Material();
+        saved.setTitle("No Style Title");
+
+        when(materialRepository.save(any(Material.class))).thenReturn(saved);
+
+        var result = materialService.addMaterial(input);
+
+        assertEquals("No Style Title", result.getTitle());
+    }
+
+    @Test
     void getFilteredMaterials_shouldFilterCorrectly() {
         Material material1 = new Material(); material1.setTitle("Djembe ritme 1"); material1.setFileType(FileType.VIDEO); material1.setInstrument("Djembe"); material1.setCategory("Partij");
         Material material2 = new Material(); material2.setTitle("Makru arrangement"); material2.setFileType(FileType.PDF); material2.setInstrument("Diversen"); material2.setCategory("Arrangement");
@@ -82,6 +98,24 @@ class MaterialServiceTest {
         var result = materialService.getFilteredMaterials("ritme", "video", "Djembe", "Partij", null, null);
 
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void getFilteredMaterials_shouldFilterByStyleNameAndOrigin() {
+        Style style = new Style();
+        style.setName("Afro");
+        style.setOrigin("Guinea");
+
+        Material m1 = new Material();
+        m1.setTitle("Title");
+        m1.setStyle(style);
+
+        when(materialRepository.findAll()).thenReturn(List.of(m1));
+
+        var result = materialService.getFilteredMaterials(null, null, null, null, "Afro", "Guinea");
+
+        assertEquals(1, result.size());
+        assertEquals("Title", result.get(0).getTitle());
     }
 
     @Test

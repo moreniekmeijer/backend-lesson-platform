@@ -111,4 +111,18 @@ class LessonServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> lessonService.getNextLesson());
     }
+
+    @Test
+    void deleteLesson_shouldClearStylesAndDelete() {
+        Lesson lesson = new Lesson();
+        lesson.setStyles(new HashSet<>(Set.of(new Style())));
+
+        when(lessonRepository.findById(1L)).thenReturn(Optional.of(lesson));
+
+        lessonService.deleteLesson(1L);
+
+        assertTrue(lesson.getStyles().isEmpty());
+        verify(lessonRepository).save(lesson);
+        verify(lessonRepository).delete(lesson);
+    }
 }
