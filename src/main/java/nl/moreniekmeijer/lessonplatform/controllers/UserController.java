@@ -106,9 +106,9 @@ public class UserController {
 
     @PreAuthorize("#username == authentication.name")
     @GetMapping("/{username}/materials")
-    public ResponseEntity<List<MaterialResponseDto>> getSavedMaterials(@PathVariable String username) {
-        List<MaterialResponseDto> savedMaterials = userService.getSavedMaterials(username);
-        return ResponseEntity.ok(savedMaterials);
+    public ResponseEntity<List<MaterialResponseDto>> getBookmarkedMaterials(@PathVariable String username) {
+        List<MaterialResponseDto> bookmarkedMaterials = userService.getBookmarkedMaterials(username);
+        return ResponseEntity.ok(bookmarkedMaterials);
     }
 
     @PreAuthorize("#username == authentication.name")

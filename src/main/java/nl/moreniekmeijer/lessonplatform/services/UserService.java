@@ -139,11 +139,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<MaterialResponseDto> getSavedMaterials(String username) {
+    public List<MaterialResponseDto> getBookmarkedMaterials(String username) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return user.getSavedMaterials().stream()
+        return user.getBookmarkedMaterials().stream()
                 .map(MaterialMapper::toResponseDto)
                 .toList();
     }

@@ -29,7 +29,7 @@ public class Material {
     @JsonIgnore
     private Style style;
 
-    @ManyToMany(mappedBy = "savedMaterials")
+    @ManyToMany(mappedBy = "bookmarkedMaterials")
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 

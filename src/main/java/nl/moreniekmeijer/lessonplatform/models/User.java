@@ -33,7 +33,7 @@ public class User {
             joinColumns = @JoinColumn(name = "username"),
             inverseJoinColumns = @JoinColumn(name = "materials_id")
     )
-    private Set<Material> savedMaterials = new HashSet<>();
+    private Set<Material> bookmarkedMaterials = new HashSet<>();
 
     public User() {
     }
@@ -82,14 +82,14 @@ public class User {
     }
 
     public void addMaterial(Material material) {
-        savedMaterials.add(material);
+        bookmarkedMaterials.add(material);
     }
 
     public void removeMaterial(Material material) {
-        savedMaterials.remove(material);
+        bookmarkedMaterials.remove(material);
     }
 
-    public Set<Material> getSavedMaterials() {
-        return savedMaterials;
+    public Set<Material> getBookmarkedMaterials() {
+        return bookmarkedMaterials;
     }
 }
