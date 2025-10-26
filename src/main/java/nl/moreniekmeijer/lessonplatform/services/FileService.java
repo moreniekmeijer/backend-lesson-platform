@@ -1,5 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
+import com.google.auth.oauth2.ServiceAccountCredentials;
+import com.google.cloud.storage.*;
 import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,25 +11,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.net.URL;
 import java.util.Objects;
 
 @Service
 public class FileService {
-    private final Path fileStoragePath;
 
-    public FileService(@Value("${file.upload-location}") Path fileStoragePath) throws IOException {
-        this.fileStoragePath = fileStoragePath.toAbsolutePath().normalize();
+    private final Storage storage;
+    private final String bucketName;
 
-        try {
-            Files.createDirectories(this.fileStoragePath);
-        } catch (IOException e) {
-            throw new IOException("Could not create the directory where the uploaded files will be stored.", e);
-        }
+    public FileService(
+            @Value("${gcs.bucket-name}") String bucketName,
+            @Value("${gcs.credentials}") String credentialsJson
+    ) throws IOException {
+        this.bucketName = bucketName;
+
+        this.storage = StorageOptions.newBuilder()
+                .setCredentials(ServiceAccountCredentials.fromStream(
+                        new ByteArrayInputStream(credentialsJson.getBytes())
+                ))
+                .build()
+                .getService();
     }
 
     public FileResponseDto saveFile(MultipartFile file) throws IOException {
@@ -42,31 +49,35 @@ public class FileService {
             default -> throw new IllegalArgumentException("Unsupported file type.");
         };
 
-        Path filePath = this.fileStoragePath.resolve(originalFilename);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        // Upload file naar GCS
+        BlobId blobId = BlobId.of(bucketName, originalFilename);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(mimeType)
+                .build();
+        storage.create(blobInfo, file.getBytes());
+
+        // Optioneel: public link maken
+        URL signedUrl = storage.signUrl(blobInfo, 7, java.util.concurrent.TimeUnit.DAYS);
 
         return new FileResponseDto(
                 originalFilename,
-                filePath.toString(),
+                signedUrl.toString(),
                 mimeType,
                 fileType
         );
     }
 
     public Resource downloadFile(String fileName) {
-        Path path = this.fileStoragePath.resolve(fileName);
-        Resource resource;
-
-        try {
-            resource = new UrlResource(path.toUri());
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("issue in reading file", e);
+        Blob blob = storage.get(BlobId.of(bucketName, fileName));
+        if (blob == null) {
+            throw new RuntimeException("File not found in bucket: " + fileName);
         }
 
-        if(resource.exists() && resource.isReadable()) {
-            return resource;
-        } else {
-            throw new RuntimeException("Could not read file " + fileName);
+        try {
+            URL signedUrl = blob.signUrl(7, java.util.concurrent.TimeUnit.DAYS);
+            return new UrlResource(signedUrl);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Failed to get signed URL for file: " + fileName, e);
         }
     }
 
