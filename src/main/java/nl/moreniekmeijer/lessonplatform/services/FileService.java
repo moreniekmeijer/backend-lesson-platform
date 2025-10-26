@@ -73,12 +73,8 @@ public class FileService {
             throw new RuntimeException("File not found in bucket: " + fileName);
         }
 
-        try {
-            URL signedUrl = blob.signUrl(7, java.util.concurrent.TimeUnit.DAYS);
-            return new UrlResource(signedUrl);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Failed to get signed URL for file: " + fileName, e);
-        }
+        URL signedUrl = blob.signUrl(7, java.util.concurrent.TimeUnit.DAYS);
+        return new UrlResource(signedUrl);
     }
 
     private String getMimeType(String extension) {
