@@ -69,9 +69,9 @@ public class MaterialController {
     @PostMapping("/{id}/file")
     public ResponseEntity<MaterialResponseDto> addFileToMaterial(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
         FileResponseDto fileResponse = fileService.saveFile(file);
-        MaterialResponseDto savedMaterial = materialService.assignToMaterial(fileResponse.getFileName(), id, fileResponse.getFileType());
-        URI location = URIUtil.createFileAssignmentUri(id);
-        return ResponseEntity.created(location).body(savedMaterial);
+        MaterialResponseDto savedMaterial = materialService.assignToMaterial(fileResponse.getFilePath(), id, fileResponse.getFileType());
+//        URI location = URIUtil.createFileAssignmentUri(id);
+        return ResponseEntity.ok(savedMaterial);
     }
 
     @GetMapping("/{id}/file")
@@ -102,7 +102,7 @@ public class MaterialController {
     public ResponseEntity<MaterialResponseDto> addLinkToMaterial(@PathVariable Long id, @Valid @RequestBody LinkInputDto linkInputDto) throws IOException {
         String link = linkInputDto.getLink();
         MaterialResponseDto savedMaterial = materialService.assignToMaterial(link, id, FileType.LINK);
-        URI location = URIUtil.createLinkAssignmentUri(id);
-        return ResponseEntity.created(location).body(savedMaterial);
+//        URI location = URIUtil.createLinkAssignmentUri(id);
+        return ResponseEntity.ok(savedMaterial);
     }
 }

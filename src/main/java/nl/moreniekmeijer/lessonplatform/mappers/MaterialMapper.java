@@ -2,7 +2,6 @@ package nl.moreniekmeijer.lessonplatform.mappers;
 
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
-import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 
@@ -27,12 +26,7 @@ public class MaterialMapper {
         responseDto.setStyleName(material.getStyle() != null ? material.getStyle().getName() : null);
         responseDto.setOrigin(material.getStyle() != null ? material.getStyle().getOrigin() : null);
 
-        if (material.getFileType() == FileType.LINK) {
-            responseDto.setFileLink(material.getFilePath());
-        } else {
-            responseDto.setFilePath(material.getFilePath());
-            responseDto.setFileLink("http://localhost:8080/materials/" + material.getId() + "/file");
-        }
+        responseDto.setFileLink(material.getFilePath());
 
         return responseDto;
     }
