@@ -103,11 +103,12 @@ public class MaterialService {
         materialRepository.delete(foundMaterial);
     }
 
+    @Transactional
     public MaterialResponseDto assignToMaterial(String fileNameOrLink, Long materialId, FileType fileType) {
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
 
-        material.setFilePath(fileNameOrLink);
+        material.setFileName(fileNameOrLink);
 
         if ("arrangement".equalsIgnoreCase(material.getCategory()) && fileType == FileType.PDF) {
             boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
@@ -134,7 +135,11 @@ public class MaterialService {
             throw new IllegalStateException("Cannot download a LINK type material.");
         }
 
-        String fileName = foundMaterial.getFilePath();
+        if (foundMaterial.getFileName() == null) {
+            throw new IllegalStateException("No file name stored for this material.");
+        }
+
+        String fileName = foundMaterial.getFileName();
         return fileService.downloadFile(fileName);
     }
 }

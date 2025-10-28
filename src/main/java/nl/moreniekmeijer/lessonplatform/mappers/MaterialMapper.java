@@ -26,7 +26,7 @@ public class MaterialMapper {
         responseDto.setStyleName(material.getStyle() != null ? material.getStyle().getName() : null);
         responseDto.setOrigin(material.getStyle() != null ? material.getStyle().getOrigin() : null);
 
-        responseDto.setFileLink(material.getFilePath());
+        responseDto.setFileLink(material.getFileName());
 
         return responseDto;
     }

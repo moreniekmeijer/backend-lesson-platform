@@ -69,7 +69,7 @@ public class MaterialController {
     @PostMapping("/{id}/file")
     public ResponseEntity<MaterialResponseDto> addFileToMaterial(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
         FileResponseDto fileResponse = fileService.saveFile(file);
-        MaterialResponseDto savedMaterial = materialService.assignToMaterial(fileResponse.getFilePath(), id, fileResponse.getFileType());
+        MaterialResponseDto savedMaterial = materialService.assignToMaterial(fileResponse.getObjectName(), id, fileResponse.getFileType());
 //        URI location = URIUtil.createFileAssignmentUri(id);
         return ResponseEntity.ok(savedMaterial);
     }

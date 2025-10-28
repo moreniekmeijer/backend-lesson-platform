@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.*;
 import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
@@ -12,9 +13,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 public class FileService {
@@ -24,16 +27,21 @@ public class FileService {
 
     public FileService(
             @Value("${gcs.bucket-name}") String bucketName,
-            @Value("${gcs.credentials}") String credentialsJson
+            @Value("${gcs.credentials.file:}") String credentialsPath
     ) throws IOException {
         this.bucketName = bucketName;
 
-        this.storage = StorageOptions.newBuilder()
-                .setCredentials(ServiceAccountCredentials.fromStream(
-                        new ByteArrayInputStream(credentialsJson.getBytes())
-                ))
-                .build()
-                .getService();
+        StorageOptions.Builder optionsBuilder = StorageOptions.newBuilder();
+
+        if (credentialsPath != null && !credentialsPath.isBlank()) {
+            optionsBuilder.setCredentials(
+                    ServiceAccountCredentials.fromStream(new FileInputStream(credentialsPath))
+            );
+        } else {
+            optionsBuilder.setCredentials(GoogleCredentials.getApplicationDefault());
+        }
+
+        this.storage = optionsBuilder.build().getService();
     }
 
     public FileResponseDto saveFile(MultipartFile file) throws IOException {
@@ -45,35 +53,42 @@ public class FileService {
             case "pdf" -> FileType.PDF;
             case "mp4", "mov" -> FileType.VIDEO;
             case "jpeg", "jpg", "png" -> FileType.IMAGE;
-            default -> throw new IllegalArgumentException("Unsupported file type.");
+            default -> throw new IllegalArgumentException("Unsupported file type: " + extension);
         };
 
+        String uniqueFileName = UUID.randomUUID() + "_" + originalFilename;
+
         // Upload file naar GCS
-        BlobId blobId = BlobId.of(bucketName, originalFilename);
+        BlobId blobId = BlobId.of(bucketName, uniqueFileName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setContentType(mimeType)
                 .build();
         storage.create(blobInfo, file.getBytes());
 
         // Optioneel: public link maken
-        URL signedUrl = storage.signUrl(blobInfo, 7, java.util.concurrent.TimeUnit.DAYS);
+//        URL signedUrl = storage.signUrl(blobInfo, 7, java.util.concurrent.TimeUnit.DAYS);
 
         return new FileResponseDto(
-                originalFilename,
-                signedUrl.toString(),
+                uniqueFileName,
+//                signedUrl.toString(),
                 mimeType,
                 fileType
         );
     }
 
-    public Resource downloadFile(String fileName) {
-        Blob blob = storage.get(BlobId.of(bucketName, fileName));
+    public Resource downloadFile(String objectName) {
+        Blob blob = storage.get(BlobId.of(bucketName, objectName));
         if (blob == null) {
-            throw new RuntimeException("File not found in bucket: " + fileName);
+            throw new RuntimeException("File not found in bucket: " + objectName);
         }
 
         URL signedUrl = blob.signUrl(7, java.util.concurrent.TimeUnit.DAYS);
-        return new UrlResource(signedUrl);
+
+        try {
+            return new UrlResource(signedUrl);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create resource from signed URL", e);
+        }
     }
 
     private String getMimeType(String extension) {

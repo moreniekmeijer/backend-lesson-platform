@@ -19,8 +19,7 @@ public class Material {
 
     @Enumerated(EnumType.STRING)
     private FileType fileType;
-
-    private String filePath;
+    private String fileName;
     private String instrument;
     private String category;
 
@@ -36,11 +35,11 @@ public class Material {
     public Material() {
     }
 
-    public Material(Long id, String title, FileType fileType, String filePath, String instrument, String category, Style style) {
+    public Material(Long id, String title, FileType fileType, String fileName, String instrument, String category, Style style) {
         this.id = id;
         this.title = title;
         this.fileType = fileType;
-        this.filePath = filePath;
+        this.fileName = fileName;
         this.instrument = instrument;
         this.category = category;
         this.style = style;
@@ -70,12 +69,12 @@ public class Material {
         this.fileType = fileType;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getInstrument() {

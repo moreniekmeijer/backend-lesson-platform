@@ -4,24 +4,20 @@ import nl.moreniekmeijer.lessonplatform.models.FileType;
 
 public class FileResponseDto {
 
-    private String fileName;
-    private String filePath;
+    private String objectName;
+//    private String signedUrl;
     private String mimeType;
     private FileType fileType;
 
-    public FileResponseDto(String fileName, String filePath, String mimeType, FileType fileType) {
-        this.fileName = fileName;
-        this.filePath = filePath;
+    public FileResponseDto(String objectName, String mimeType, FileType fileType) {
+        this.objectName = objectName;
+//        this.signedUrl = signedUrl;
         this.mimeType = mimeType;
         this.fileType = fileType;
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
-    public String getFilePath() {
-        return filePath;
+    public String getObjectName() {
+        return objectName;
     }
 
     public String getMimeType() {
@@ -32,12 +28,8 @@ public class FileResponseDto {
         return fileType;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setObjectName(String objectName) {
+        this.objectName = objectName;
     }
 
     public void setMimeType(String mimeType) {

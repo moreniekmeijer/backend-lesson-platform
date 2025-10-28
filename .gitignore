@@ -33,3 +33,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### GCS ###
+gcs_service_key.json

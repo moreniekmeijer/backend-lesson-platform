@@ -181,7 +181,7 @@ class MaterialServiceTest {
 
     @Test
     void getFileFromMaterial_shouldReturnResource() {
-        Material material = new Material(); material.setFileType(FileType.PDF); material.setFilePath("file.pdf");
+        Material material = new Material(); material.setFileType(FileType.PDF); material.setFileName("file.pdf");
         when(materialRepository.findById(1L)).thenReturn(Optional.of(material));
         Resource mockResource = mock(Resource.class);
         when(fileService.downloadFile("file.pdf")).thenReturn(mockResource);
