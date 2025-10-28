@@ -127,19 +127,19 @@ public class MaterialService {
     }
 
     @Transactional
-    public Resource getFileFromMaterial(Long id) {
-        Material foundMaterial = materialRepository.findById(id)
+    public String getSignedUrlForMaterial(Long id, String action) {
+        Material material = materialRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
 
-        if (foundMaterial.getFileType() == FileType.LINK) {
-            throw new IllegalStateException("Cannot download a LINK type material.");
+        if (material.getFileType() == FileType.LINK) {
+            throw new IllegalStateException("Cannot get signed URL for LINK type material.");
         }
 
-        if (foundMaterial.getFileName() == null) {
+        if (material.getFileName() == null) {
             throw new IllegalStateException("No file name stored for this material.");
         }
 
-        String fileName = foundMaterial.getFileName();
-        return fileService.downloadFile(fileName);
+        boolean download = "download".equalsIgnoreCase(action);
+        return fileService.generateSignedUrl(material.getFileName(), download);
     }
 }

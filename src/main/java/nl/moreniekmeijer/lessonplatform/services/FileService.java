@@ -16,8 +16,10 @@ import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class FileService {
@@ -76,19 +78,24 @@ public class FileService {
         );
     }
 
-    public Resource downloadFile(String objectName) {
+    public String generateSignedUrl(String objectName, boolean download) {
         Blob blob = storage.get(BlobId.of(bucketName, objectName));
         if (blob == null) {
             throw new RuntimeException("File not found in bucket: " + objectName);
         }
 
-        URL signedUrl = blob.signUrl(7, java.util.concurrent.TimeUnit.DAYS);
+        String disposition = download
+                ? "attachment; filename=\"" + objectName + "\""
+                : "inline; filename=\"" + objectName + "\"";
 
-        try {
-            return new UrlResource(signedUrl);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to create resource from signed URL", e);
-        }
+        Map<String, String> queryParams = Map.of("response-content-disposition", disposition);
+
+        URL signedUrl = blob.signUrl(
+                7, TimeUnit.DAYS,
+                Storage.SignUrlOption.withQueryParams(queryParams)
+        );
+
+        return signedUrl.toString();
     }
 
     private String getMimeType(String extension) {

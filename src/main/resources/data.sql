@@ -6,7 +6,7 @@ VALUES ('Maracatu', 'Brazil',
        ('Makru', 'Africa',
         'Makru is een Afrikaanse muziekstijl uit de Gambiaanse en Senegalese regio, vaak geassocieerd met de Mandinka-cultuur. Het is een ritmische en percussieve muziek die wordt gespeeld met instrumenten zoals de djembe, balafon en dunun (trommels). Makru is zowel een dans als een ritueel, met een focus op herhalende, complexe ritmes die de verbondenheid met de natuur en de voorouders weerspiegelen. Het wordt vaak uitgevoerd tijdens ceremonies en feesten.');
 
-INSERT INTO material (title, file_type, file_path, instrument, category, styles_id)
+INSERT INTO material (title, file_type, file_name, instrument, category, styles_id)
 VALUES ('Surdo partij 2', 'VIDEO', 'Surdo partij 2.MP4', 'Surdo', 'Partij', 1),
        ('Snaredrum partij (maracatu)', 'VIDEO', 'Snaredrum partij.MP4', 'Snaredrum', 'Partij', 1),
        ('Maracatu Arrangement', 'PDF', 'Arrangement Maracatu.pdf', 'Diversen', 'Arrangement', 1),

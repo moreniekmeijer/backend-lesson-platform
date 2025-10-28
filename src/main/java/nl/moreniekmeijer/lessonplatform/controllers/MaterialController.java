@@ -10,6 +10,7 @@ import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.services.FileService;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,27 +76,18 @@ public class MaterialController {
     }
 
     @GetMapping("/{id}/file")
-    public ResponseEntity<Resource> getFile(@PathVariable Long id, @RequestParam(defaultValue = "view") String action, HttpServletRequest request) {
-        Resource resource = materialService.getFileFromMaterial(id);
+    public ResponseEntity<Void> getFile(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "view") String action
+    ) {
+        String signedUrl = materialService.getSignedUrlForMaterial(id, action);
 
-        String mimeType;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.LOCATION, signedUrl);
 
-        try {
-            mimeType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException e) {
-            mimeType = "application/octet-stream";
-        }
-
-        String contentDisposition = "inline";
-        if ("download".equals(action)) {
-            contentDisposition = "attachment";
-        }
-
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.parseMediaType(mimeType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition + "; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .headers(headers)
+                .build();
     }
 
     @PostMapping("/{id}/link")
