@@ -8,6 +8,11 @@ import nl.moreniekmeijer.lessonplatform.models.Style;
 
 public class MaterialMapper {
 
+    private static final String DEFAULT_BASE_URL = "http://localhost:8080";
+    private static final String BASE_URL = System.getenv("BASE_URL") != null
+            ? System.getenv("BASE_URL")
+            : DEFAULT_BASE_URL;
+
     public static Material toEntity(MaterialInputDto dto, Style style) {
         Material material = new Material();
         material.setTitle(dto.getTitle());
@@ -29,9 +34,10 @@ public class MaterialMapper {
 
         if (material.getFileType() == FileType.LINK) {
             responseDto.setFileLink(material.getFileName());
-        } else if (material.getId() != null) {
-            // TODO: Dynamisch maken, .env gebruiken voor lokaal of remote!
-            responseDto.setFileLink("http://localhost:8080/materials/" + material.getId() + "/file");
+        } else if (material.getFileName() != null) {
+            responseDto.setFileLink(BASE_URL + "/materials/" + material.getId() + "/file");
+        } else {
+            responseDto.setFileLink(null);
         }
 
         return responseDto;
