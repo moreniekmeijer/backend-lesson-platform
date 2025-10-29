@@ -100,6 +100,11 @@ public class MaterialService {
     public void deleteMaterial(Long id) {
         Material foundMaterial = materialRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
+
+        if (foundMaterial.getFileType() != FileType.LINK && foundMaterial.getFileName() != null) {
+            fileService.deleteFile(foundMaterial.getFileName());
+        }
+
         materialRepository.delete(foundMaterial);
     }
 
@@ -141,5 +146,11 @@ public class MaterialService {
 
         boolean download = "download".equalsIgnoreCase(action);
         return fileService.generateSignedUrl(material.getFileName(), download);
+    }
+
+    public void ensureExists(Long id) {
+        if (!materialRepository.existsById(id)) {
+            throw new EntityNotFoundException("Material not found with id: " + id);
+        }
     }
 }

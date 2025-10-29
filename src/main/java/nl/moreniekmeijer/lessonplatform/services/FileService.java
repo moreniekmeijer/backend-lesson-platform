@@ -98,6 +98,21 @@ public class FileService {
         return signedUrl.toString();
     }
 
+    public void deleteFile(String filePath) {
+        try {
+            Bucket bucket = storage.get(bucketName);
+            Blob blob = bucket.get(filePath);
+            if (blob != null && blob.exists()) {
+                blob.delete();
+                System.out.println("Deleted file from bucket: " + filePath);
+            } else {
+                System.out.println("File not found in bucket: " + filePath);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete file from GCS: " + e.getMessage(), e);
+        }
+    }
+
     private String getMimeType(String extension) {
         return switch (extension) {
             case "pdf" -> "application/pdf";
