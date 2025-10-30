@@ -8,12 +8,15 @@ import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
+import nl.moreniekmeijer.lessonplatform.models.User;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
+import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.core.io.Resource;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -23,11 +26,13 @@ public class MaterialService {
     private final MaterialRepository materialRepository;
     private final StyleRepository styleRepository;
     private final FileService fileService;
+    private final UserRepository userRepository;
 
-    public MaterialService(MaterialRepository materialRepository, StyleRepository styleRepository, FileService fileService) {
+    public MaterialService(MaterialRepository materialRepository, StyleRepository styleRepository, FileService fileService, UserRepository userRepository) {
         this.materialRepository = materialRepository;
         this.styleRepository = styleRepository;
         this.fileService = fileService;
+        this.userRepository = userRepository;
     }
 
     public MaterialResponseDto addMaterial(MaterialInputDto materialInputDto) {
@@ -97,9 +102,14 @@ public class MaterialService {
         return MaterialMapper.toResponseDto(foundMaterial);
     }
 
+    @Transactional
     public void deleteMaterial(Long id) {
         Material foundMaterial = materialRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
+
+        for (User user : foundMaterial.getUsers()) {
+            user.getBookmarkedMaterials().remove(foundMaterial);
+        }
 
         if (foundMaterial.getFileType() != FileType.LINK && foundMaterial.getFileName() != null) {
             fileService.deleteFile(foundMaterial.getFileName());

@@ -28,7 +28,7 @@ public class Material {
     @JsonIgnore
     private Style style;
 
-    @ManyToMany(mappedBy = "bookmarkedMaterials")
+    @ManyToMany(mappedBy = "bookmarkedMaterials", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 
@@ -100,4 +100,8 @@ public class Material {
     public void setStyle(Style style) {
         this.style = style;
     }
+
+    public Set<User> getUsers() {return users;}
+
+    public void setUsers(Set<User> users) {this.users = users;}
 }
