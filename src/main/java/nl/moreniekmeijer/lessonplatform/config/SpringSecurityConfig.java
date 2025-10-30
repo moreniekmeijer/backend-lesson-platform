@@ -49,11 +49,14 @@ public class SpringSecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users/forgot-password").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/users/reset-password").permitAll()
                                 .requestMatchers("/authenticate").permitAll()
                                 .requestMatchers("/users/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/**").authenticated()
                                 .requestMatchers("/**").hasRole("ADMIN")
                                 .anyRequest().denyAll()
+//                                .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable);

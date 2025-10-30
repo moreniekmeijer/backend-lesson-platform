@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import nl.moreniekmeijer.lessonplatform.dtos.*;
 import nl.moreniekmeijer.lessonplatform.exceptions.InvalidInviteCodeException;
 import nl.moreniekmeijer.lessonplatform.exceptions.UsernameAlreadyExistsException;
@@ -8,16 +9,20 @@ import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
 import nl.moreniekmeijer.lessonplatform.models.Authority;
 import nl.moreniekmeijer.lessonplatform.models.Material;
+import nl.moreniekmeijer.lessonplatform.models.PasswordResetToken;
 import nl.moreniekmeijer.lessonplatform.models.User;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
+import nl.moreniekmeijer.lessonplatform.repositories.PasswordResetTokenRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -25,14 +30,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final MaterialRepository materialRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
 
     @Value("${invite.code}")
     private String requiredInviteCode;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MaterialRepository materialRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MaterialRepository materialRepository, PasswordResetTokenRepository passwordResetTokenRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.materialRepository = materialRepository;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
     public UserResponseDto addUser(UserRegistrationDto userInputDto) {
@@ -157,5 +164,42 @@ public class UserService {
 
         user.removeMaterial(material);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void createPasswordResetToken(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Geen gebruiker gevonden met dit e-mailadres."));
+
+        // Verwijder eerdere tokens voor deze gebruiker
+        passwordResetTokenRepository.deleteByUsername(user.getUsername());
+
+        // Maak nieuw token aan
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
+
+        PasswordResetToken resetToken = new PasswordResetToken(token, user.getUsername(), expiryDate);
+        passwordResetTokenRepository.save(resetToken);
+
+        // Stuur mail of log tijdelijk in de console
+        System.out.println("👉 Wachtwoord reset link: https://frontend-url/reset-password?token=" + token);
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("Ongeldig of verlopen token."));
+
+        if (resetToken.isExpired()) {
+            throw new IllegalArgumentException("Token is verlopen.");
+        }
+
+        User user = userRepository.findById(resetToken.getUsername())
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden."));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Verwijder token na gebruik
+        passwordResetTokenRepository.delete(resetToken);
     }
 }

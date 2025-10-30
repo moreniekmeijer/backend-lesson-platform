@@ -119,5 +119,20 @@ public class UserController {
         userService.removeMaterialFromUser(username, materialId);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        userService.createPasswordResetToken(email);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody Map<String, String> body) {
+        String token = body.get("token");
+        String newPassword = body.get("newPassword");
+        userService.resetPassword(token, newPassword);
+        return ResponseEntity.ok().build();
+    }
 }
 
