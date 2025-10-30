@@ -15,6 +15,8 @@ import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.PasswordResetTokenRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,15 +33,20 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final MaterialRepository materialRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final JavaMailSender mailSender;
+
+    @Value("${FRONTEND_URL}")
+    private String frontendUrl;
 
     @Value("${invite.code}")
     private String requiredInviteCode;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MaterialRepository materialRepository, PasswordResetTokenRepository passwordResetTokenRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MaterialRepository materialRepository, PasswordResetTokenRepository passwordResetTokenRepository, JavaMailSender mailSender) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.materialRepository = materialRepository;
         this.passwordResetTokenRepository = passwordResetTokenRepository;
+        this.mailSender = mailSender;
     }
 
     public UserResponseDto addUser(UserRegistrationDto userInputDto) {
@@ -181,8 +188,17 @@ public class UserService {
         PasswordResetToken resetToken = new PasswordResetToken(token, user.getUsername(), expiryDate);
         passwordResetTokenRepository.save(resetToken);
 
-        // Stuur mail of log tijdelijk in de console
-        System.out.println("👉 Wachtwoord reset link: https://frontend-url/reset-password?token=" + token);
+        String resetLink = frontendUrl + "/reset-password?token=" + token;
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Reset je wachtwoord");
+        message.setText("Hallo " + user.getUsername() + ",\n\n"
+                + "Je kunt je wachtwoord resetten via deze link:\n"
+                + resetLink + "\n\n"
+                + "Deze link is 15 minuten geldig.\n\n");
+
+        mailSender.send(message);
     }
 
     public void resetPassword(String token, String newPassword) {
