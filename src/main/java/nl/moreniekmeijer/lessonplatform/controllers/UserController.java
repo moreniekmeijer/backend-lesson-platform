@@ -33,7 +33,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody UserRegistrationDto userInputDto) {
         UserResponseDto savedUser = userService.addUser(userInputDto);
-        userService.addAuthority(savedUser.getUsername(), "ROLE_USER");
 
         URI location = URIUtil.createResourceUriUser(savedUser.getUsername());
 

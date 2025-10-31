@@ -7,10 +7,7 @@ import nl.moreniekmeijer.lessonplatform.exceptions.InvalidInviteCodeException;
 import nl.moreniekmeijer.lessonplatform.exceptions.UsernameAlreadyExistsException;
 import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
-import nl.moreniekmeijer.lessonplatform.models.Authority;
-import nl.moreniekmeijer.lessonplatform.models.Material;
-import nl.moreniekmeijer.lessonplatform.models.PasswordResetToken;
-import nl.moreniekmeijer.lessonplatform.models.User;
+import nl.moreniekmeijer.lessonplatform.models.*;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.PasswordResetTokenRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
@@ -38,8 +35,14 @@ public class UserService {
     @Value("${FRONTEND_URL}")
     private String frontendUrl;
 
-    @Value("${invite.code}")
-    private String requiredInviteCode;
+    @Value("${invite.code.guest}")
+    private String guestInviteCode;
+
+    @Value("${invite.code.group1}")
+    private String group1InviteCode;
+
+    @Value("${invite.code.group2}")
+    private String group2InviteCode;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, MaterialRepository materialRepository, PasswordResetTokenRepository passwordResetTokenRepository, JavaMailSender mailSender) {
         this.userRepository = userRepository;
@@ -54,14 +57,27 @@ public class UserService {
             throw new UsernameAlreadyExistsException("Deze gebruikersnaam is al in gebruik.");
         }
 
-        if (!requiredInviteCode.equals(userInputDto.getInviteCode())) {
-            throw new InvalidInviteCodeException("Ongeldige registratiecode");
-        }
+        UserRole role = getRoleFromInviteCode(userInputDto.getInviteCode());
 
         User user = UserMapper.toEntity(userInputDto);
         user.setPassword(passwordEncoder.encode(userInputDto.getPassword()));
         User savedUser = userRepository.save(user);
+
+        addAuthority(savedUser.getUsername(), "ROLE_" + role.name());
+
         return UserMapper.toResponseDto(savedUser);
+    }
+
+    private UserRole getRoleFromInviteCode(String inviteCode) {
+        if (inviteCode.equals(guestInviteCode)) {
+            return UserRole.GUEST;
+        } else if (inviteCode.equals(group1InviteCode)) {
+            return UserRole.GROUP_1;
+        } else if (inviteCode.equals(group2InviteCode)) {
+            return UserRole.GROUP_2;
+        } else {
+            throw new InvalidInviteCodeException("Ongeldige registratiecode");
+        }
     }
 
     public List<UserResponseDto> getAllUsers() {
