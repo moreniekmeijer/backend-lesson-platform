@@ -7,6 +7,7 @@ public class LessonResponseDto {
     private Long id;
     private LocalDateTime scheduledDateTime;
     private String notes;
+    private Set<String> allowedRoles;
     private Set<Long> styleIds;
 
     public Long getId() {
@@ -31,6 +32,14 @@ public class LessonResponseDto {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Set<String> getAllowedRoles() {
+        return allowedRoles;
+    }
+
+    public void setAllowedRoles(Set<String> allowedRoles) {
+        this.allowedRoles = allowedRoles;
     }
 
     public void setStyleIds(Set<Long> styleIds) {

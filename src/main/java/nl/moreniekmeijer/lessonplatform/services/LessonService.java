@@ -8,12 +8,15 @@ import nl.moreniekmeijer.lessonplatform.models.Lesson;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.LessonRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class LessonService {
@@ -34,7 +37,6 @@ public class LessonService {
 
         Set<Style> styles = new HashSet<>();
 
-
         if (lessonInputDto.getStyleIds() != null && !lessonInputDto.getStyleIds().isEmpty()) {
             styles.addAll(styleRepository.findAllById(lessonInputDto.getStyleIds()));
         }
@@ -48,30 +50,62 @@ public class LessonService {
         }
 
         Lesson createdLesson = LessonMapper.toEntity(lessonInputDto, styles);
+
+        if (createdLesson.getAllowedRoles().isEmpty()) {
+            throw new IllegalArgumentException("Een les moet minstens één toegestane rol hebben (bijv. ROLE_GROUP_1 of ROLE_GROUP_2).");
+        }
+
         Lesson savedLesson = lessonRepository.save(createdLesson);
         return LessonMapper.toResponseDto(savedLesson);
     }
 
     public List<LessonResponseDto> getAllLessons() {
-        List<Lesson> foundLessons = lessonRepository.findAllByOrderByScheduledDateTimeAsc();
-        return foundLessons.stream()
+        Set<String> userRoles = getCurrentUserRoles();
+
+        boolean isAdmin = userRoles.contains("ROLE_ADMIN");
+
+        List<Lesson> lessons = lessonRepository.findAllByOrderByScheduledDateTimeAsc();
+
+        return lessons.stream()
+                .filter(lesson -> isAdmin || lesson.getAllowedRoles().stream().anyMatch(userRoles::contains))
                 .map(LessonMapper::toResponseDto)
                 .toList();
     }
 
     public LessonResponseDto getNextLesson() {
+        Set<String> userRoles = getCurrentUserRoles();
+        boolean isAdmin = userRoles.contains("ROLE_ADMIN");
+
         LocalDateTime now = LocalDateTime.now();
-        Lesson nextLesson = lessonRepository
-                .findFirstByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(now)
-                .orElseThrow(() -> new EntityNotFoundException("No upcoming lessons found"));
+        List<Lesson> lessons = lessonRepository.findAllByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(now);
+
+        Lesson nextLesson = lessons.stream()
+                .filter(lesson -> isAdmin || lesson.getAllowedRoles().stream().anyMatch(userRoles::contains))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException("Geen lessen beschikbaar voor jouw groep."));
+
         return LessonMapper.toResponseDto(nextLesson);
     }
+
 
     public void deleteLesson(Long id) {
         Lesson foundLesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Lesson not found with id: " + id));
+
         foundLesson.getStyles().clear();
+        foundLesson.getAllowedRoles().clear();
+
         lessonRepository.save(foundLesson);
         lessonRepository.delete(foundLesson);
+    }
+
+    private Set<String> getCurrentUserRoles() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getAuthorities() == null) {
+            return Set.of();
+        }
+        return authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority())
+                .collect(Collectors.toSet());
     }
 }

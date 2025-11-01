@@ -9,8 +9,8 @@ public class UserRegistrationDto {
     @NotNull(message = "Username is required")
     @Size(min = 3, max = 20, message = "Gebruikersnaam moet tussen 3 en 20 tekens bevatten")
     @Pattern(
-            regexp = "^[a-zA-Z][a-zA-Z0-9._]{2,19}$",
-            message = "Gebruikersnaam moet beginnen met een letter en mag alleen letters, cijfers, punten of underscores bevatten"
+            regexp = "^[a-zA-Z][a-zA-Z0-9._ ]{2,19}$",
+            message = "Gebruikersnaam moet beginnen met een letter en mag alleen letters, cijfers, punten, underscores of spaties bevatten"
     )
     private String username;
 

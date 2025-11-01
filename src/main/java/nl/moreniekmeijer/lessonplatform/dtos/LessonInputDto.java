@@ -4,11 +4,13 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class LessonInputDto {
     @NotNull(message = "Scheduled date is required")
     private LocalDateTime scheduledDateTime;
     private String notes;
+    private Set<String> allowedRoles;
     private List<Long> styleIds;
     private List<String> styleNames;
 
@@ -26,6 +28,14 @@ public class LessonInputDto {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Set<String> getAllowedRoles() {
+        return allowedRoles;
+    }
+
+    public void setAllowedRoles(Set<String> allowedRoles) {
+        this.allowedRoles = allowedRoles;
     }
 
     public List<Long> getStyleIds() {

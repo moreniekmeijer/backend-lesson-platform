@@ -3,6 +3,7 @@ package nl.moreniekmeijer.lessonplatform.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -16,6 +17,14 @@ public class Lesson {
     private LocalDateTime scheduledDateTime;
     private String notes;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "lesson_roles",
+            joinColumns = @JoinColumn(name = "lesson_id")
+    )
+    @Column(name = "role")
+    private Set<String> allowedRoles = new HashSet<>();
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "lessons_styles",
@@ -27,10 +36,11 @@ public class Lesson {
     public Lesson() {
     }
 
-    public Lesson(Long id, LocalDateTime scheduledDateTime, String notes, Set<Style> styles) {
+    public Lesson(Long id, LocalDateTime scheduledDateTime, String notes, Set<String> allowedRoles, Set<Style> styles) {
         this.id = id;
         this.scheduledDateTime = scheduledDateTime;
         this.notes = notes;
+        this.allowedRoles = allowedRoles;
         this.styles = styles;
     }
 
@@ -56,6 +66,14 @@ public class Lesson {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Set<String> getAllowedRoles() {
+        return allowedRoles;
+    }
+
+    public void setAllowedRoles(Set<String> allowedRoles) {
+        this.allowedRoles = allowedRoles;
     }
 
     public Set<Style> getStyles() {

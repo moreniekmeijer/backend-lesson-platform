@@ -13,6 +13,7 @@ public class LessonMapper {
         Lesson lesson = new Lesson();
         lesson.setScheduledDateTime(dto.getScheduledDateTime());
         lesson.setNotes(dto.getNotes());
+        lesson.setAllowedRoles(dto.getAllowedRoles() != null ? dto.getAllowedRoles() : Set.of());
         lesson.setStyles(styles);
         return lesson;
     }
@@ -22,6 +23,7 @@ public class LessonMapper {
         responseDto.setId(lesson.getId());
         responseDto.setScheduledDateTime(lesson.getScheduledDateTime());
         responseDto.setNotes(lesson.getNotes());
+        responseDto.setAllowedRoles(lesson.getAllowedRoles());
         responseDto.setStyleIds(
                 lesson.getStyles().stream()
                         .map(Style::getId)

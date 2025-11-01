@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
-    Optional<Lesson> findFirstByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(LocalDateTime now);
-
     List<Lesson> findAllByOrderByScheduledDateTimeAsc();
+
+    List<Lesson> findAllByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(LocalDateTime now);
 }
