@@ -15,7 +15,7 @@ public class CORSConfig
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173", "https://frontend-lesson-platform.netlify.app")
+                        .allowedOrigins("http://localhost:5173", "https://frontend-lesson-platform.netlify.app", "https://percussieplatform.moreniekmeijer.nl")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("*");
