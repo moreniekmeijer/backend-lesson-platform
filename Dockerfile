@@ -1,19 +1,25 @@
-# 1. Start met een lichte OpenJDK base image
-FROM openjdk:17-jdk-slim
+# ---- Stage 1: build ----
+FROM eclipse-temurin:21-jdk AS build
 
-# 2. Installeer ffmpeg en andere benodigde tools
-RUN apt-get update && \
-    apt-get install -y ffmpeg && \
-    rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+COPY . .
+RUN ./mvnw clean package -DskipTests
 
-# 3. Zet werkdirectory
+# ---- Stage 2: runtime ----
+FROM eclipse-temurin:21-jre
+
+# Install ffmpeg (kleine layer, belangrijk)
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
 WORKDIR /app
 
-# 4. Kopieer het jar-bestand (pas pad aan als nodig)
-COPY target/lesson-platform.jar app.jar
+# Copy the built jar
+COPY --from=build /app/target/*.jar app.jar
 
-# 5. Exposeer poort (optioneel, Cloud Run zet dit automatisch)
+# Expose port for Cloud Run
+ENV PORT=8080
 EXPOSE 8080
 
-# 6. Start de app
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+# Start Spring Boot
+ENTRYPOINT ["java", "-jar", "app.jar"]
