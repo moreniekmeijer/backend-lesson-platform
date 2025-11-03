@@ -155,7 +155,7 @@ public class MaterialService {
         }
 
         boolean download = "download".equalsIgnoreCase(action);
-        return fileService.generateSignedUrl(material.getFileName(), download);
+        return fileService.generateSignedUrl(material.getFileName(), download, material.getTitle());
     }
 
     public void ensureExists(Long id) {

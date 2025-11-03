@@ -1,6 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LinkInputDto;
@@ -11,7 +11,6 @@ import nl.moreniekmeijer.lessonplatform.services.FileService;
 import nl.moreniekmeijer.lessonplatform.services.MaterialService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 
 @RestController
@@ -67,12 +65,25 @@ public class MaterialController {
         return ResponseEntity.noContent().build();
     }
 
+    @Transactional
     @PostMapping("/{id}/file")
-    public ResponseEntity<MaterialResponseDto> addFileToMaterial(@PathVariable Long id, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<MaterialResponseDto> addFileToMaterial(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) throws IOException {
+        MaterialResponseDto material = materialService.getMaterialById(id);
+        String materialTitle = material.getTitle();
+
         materialService.ensureExists(id);
-        FileResponseDto fileResponse = fileService.saveFile(file);
-        MaterialResponseDto savedMaterial = materialService.assignToMaterial(fileResponse.getObjectName(), id, fileResponse.getFileType());
-//        URI location = URIUtil.createFileAssignmentUri(id);
+
+        FileResponseDto fileResponse = fileService.saveFile(file, materialTitle);
+
+        MaterialResponseDto savedMaterial = materialService.assignToMaterial(
+                fileResponse.getObjectName(),
+                id,
+                fileResponse.getFileType()
+        );
+
         return ResponseEntity.ok(savedMaterial);
     }
 
@@ -95,7 +106,6 @@ public class MaterialController {
     public ResponseEntity<MaterialResponseDto> addLinkToMaterial(@PathVariable Long id, @Valid @RequestBody LinkInputDto linkInputDto) throws IOException {
         String link = linkInputDto.getLink();
         MaterialResponseDto savedMaterial = materialService.assignToMaterial(link, id, FileType.LINK);
-//        URI location = URIUtil.createLinkAssignmentUri(id);
         return ResponseEntity.ok(savedMaterial);
     }
 }

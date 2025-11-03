@@ -6,13 +6,11 @@ import com.google.cloud.storage.*;
 import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -46,52 +44,47 @@ public class FileService {
         this.storage = optionsBuilder.build().getService();
     }
 
-    public FileResponseDto saveFile(MultipartFile file) throws IOException {
-        String originalFilename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-        String extension = originalFilename.substring(originalFilename.lastIndexOf('.') + 1).toLowerCase();
-        String mimeType = getMimeType(extension);
+    public FileResponseDto saveFile(MultipartFile file, String materialTitle) throws IOException {
+        File tempFile = convertMultipartToFile(file);
+        String originalFilename = cleanFileName(file.getOriginalFilename());
+        String extension = getFileExtension(originalFilename).toLowerCase();
 
-        FileType fileType = switch (extension) {
-            case "pdf" -> FileType.PDF;
-            case "mp4", "mov" -> FileType.VIDEO;
-            case "jpeg", "jpg", "png" -> FileType.IMAGE;
-            default -> throw new IllegalArgumentException("Unsupported file type: " + extension);
-        };
+        FileType fileType = determineFileType(extension);
 
-        String uniqueFileName = UUID.randomUUID() + "_" + originalFilename;
-
-        // Upload file naar GCS
-        BlobId blobId = BlobId.of(bucketName, uniqueFileName);
-        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
-                .setContentType(mimeType)
-                .build();
-        storage.create(blobInfo, file.getBytes());
-
-        // Optioneel: public link maken
-//        URL signedUrl = storage.signUrl(blobInfo, 7, java.util.concurrent.TimeUnit.DAYS);
-
-        return new FileResponseDto(
-                uniqueFileName,
-//                signedUrl.toString(),
-                mimeType,
-                fileType
-        );
-    }
-
-    public String generateSignedUrl(String objectName, boolean download) {
-        Blob blob = storage.get(BlobId.of(bucketName, objectName));
-        if (blob == null) {
-            throw new RuntimeException("File not found in bucket: " + objectName);
+        if ("mov".equals(extension)) {
+            File converted = convertMovToMp4(tempFile);
+            tempFile.delete();
+            tempFile = converted;
+            extension = "mp4";
+            fileType = FileType.VIDEO;
         }
 
+        String uniqueFileName = generateUniqueFileName(materialTitle, extension);
+
+        uploadToGcs(tempFile, uniqueFileName, getMimeType(extension));
+        tempFile.delete();
+
+        return new FileResponseDto(uniqueFileName, getMimeType(extension), fileType);
+    }
+
+    public String generateSignedUrl(String objectName, boolean download, String materialTitle) {
+        Blob blob = storage.get(BlobId.of(bucketName, objectName));
+        if (blob == null) throw new RuntimeException("File not found in bucket: " + objectName);
+
+        String extension = getFileExtension(objectName);
+        String safeTitle = (materialTitle != null) ? materialTitle.replaceAll("[^a-zA-Z0-9-_]", "_") : objectName;
+        String finalFileName = safeTitle + "." + extension;
+
         String disposition = download
-                ? "attachment; filename=\"" + objectName + "\""
-                : "inline; filename=\"" + objectName + "\"";
+                ? "attachment; filename=\"" + finalFileName + "\""
+                : "inline; filename=\"" + finalFileName + "\"";
 
         Map<String, String> queryParams = Map.of("response-content-disposition", disposition);
 
         URL signedUrl = blob.signUrl(
                 7, TimeUnit.DAYS,
+                Storage.SignUrlOption.withV4Signature(),
+                Storage.SignUrlOption.httpMethod(HttpMethod.GET),
                 Storage.SignUrlOption.withQueryParams(queryParams)
         );
 
@@ -104,13 +97,79 @@ public class FileService {
             Blob blob = bucket.get(filePath);
             if (blob != null && blob.exists()) {
                 blob.delete();
-                System.out.println("Deleted file from bucket: " + filePath);
             } else {
-                System.out.println("File not found in bucket: " + filePath);
+                throw new RuntimeException("File not found in bucket: " + filePath);
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to delete file from GCS: " + e.getMessage(), e);
         }
+    }
+
+    private File convertMultipartToFile(MultipartFile file) throws IOException {
+        File convFile = File.createTempFile("upload_", null);
+        file.transferTo(convFile);
+        return convFile;
+    }
+
+    private String cleanFileName(String originalFilename) {
+        return StringUtils.cleanPath(Objects.requireNonNull(originalFilename));
+    }
+
+    private String getFileExtension(String filename) {
+        int lastDot = filename.lastIndexOf('.');
+        return (lastDot > 0) ? filename.substring(lastDot + 1) : "";
+    }
+
+    private FileType determineFileType(String extension) {
+        return switch (extension) {
+            case "pdf" -> FileType.PDF;
+            case "mp4", "mov" -> FileType.VIDEO;
+            case "jpeg", "jpg", "png" -> FileType.IMAGE;
+            default -> throw new IllegalArgumentException("Unsupported file type: " + extension);
+        };
+    }
+
+    private String generateUniqueFileName(String title, String extension) {
+        String safeTitle = (title != null)
+                ? title.replaceAll("[^a-zA-Z0-9-_]", "_")
+                : UUID.randomUUID().toString();
+        return safeTitle + "." + extension;
+    }
+
+    private void uploadToGcs(File file, String objectName, String mimeType) throws IOException {
+        BlobId blobId = BlobId.of(bucketName, objectName);
+        BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
+                .setContentType(mimeType)
+                .build();
+        storage.create(blobInfo, java.nio.file.Files.readAllBytes(file.toPath()));
+    }
+
+    private File convertMovToMp4(File movFile) throws IOException {
+        File outputFile = File.createTempFile("converted_", ".mp4");
+        ProcessBuilder pb = new ProcessBuilder(
+                "ffmpeg",
+                "-y",
+                "-i", movFile.getAbsolutePath(),
+                "-vcodec", "libx264",
+                "-crf", "28",
+                "-preset", "fast",
+                "-vf", "scale=720:-2",
+                "-acodec", "aac",
+                "-b:a", "128k",
+                outputFile.getAbsolutePath()
+        );
+        pb.inheritIO();
+        try {
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new RuntimeException("ffmpeg conversion failed with exit code " + exitCode);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("ffmpeg conversion interrupted", e);
+        }
+        return outputFile;
     }
 
     private String getMimeType(String extension) {
