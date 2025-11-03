@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -72,21 +73,37 @@ public class LessonService {
                 .toList();
     }
 
-    public LessonResponseDto getNextLesson() {
-        Set<String> userRoles = getCurrentUserRoles();
-        boolean isAdmin = userRoles.contains("ROLE_ADMIN");
-
+    public List<LessonResponseDto> getNextLessons() {
         LocalDateTime now = LocalDateTime.now();
-        List<Lesson> lessons = lessonRepository.findAllByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(now);
+        Set<String> userRoles = getCurrentUserRoles();
 
-        Lesson nextLesson = lessons.stream()
-                .filter(lesson -> isAdmin || lesson.getAllowedRoles().stream().anyMatch(userRoles::contains))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("Geen lessen beschikbaar voor jouw groep."));
+        // Admin wordt behandeld alsof hij beide groepen heeft
+        if (userRoles.contains("ROLE_ADMIN")) {
+            userRoles = Set.of("ROLE_GROUP_1", "ROLE_GROUP_2");
+        }
 
-        return LessonMapper.toResponseDto(nextLesson);
+        // Filter alleen groepsrollen
+        List<String> groupRoles = userRoles.stream()
+                .filter(r -> r.startsWith("ROLE_GROUP_"))
+                .toList();
+
+        if (groupRoles.isEmpty()) {
+            throw new EntityNotFoundException("Geen lessen beschikbaar voor jouw groep.");
+        }
+
+        // Vind per groep de eerstvolgende les en verzamel ze
+        List<Lesson> lessons = groupRoles.stream()
+                .flatMap(role -> lessonRepository.findNextLessonsForRole(role, now).stream().limit(1))
+                .toList();
+
+        if (lessons.isEmpty()) {
+            throw new EntityNotFoundException("Geen lessen gevonden voor jouw groepen.");
+        }
+
+        return lessons.stream()
+                .map(LessonMapper::toResponseDto)
+                .toList();
     }
-
 
     public void deleteLesson(Long id) {
         Lesson foundLesson = lessonRepository.findById(id)

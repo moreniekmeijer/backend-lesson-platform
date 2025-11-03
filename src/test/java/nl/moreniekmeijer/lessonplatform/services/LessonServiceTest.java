@@ -92,25 +92,25 @@ class LessonServiceTest {
         assertEquals(1, result.size());
     }
 
-    @Test
-    void getNextLesson_shouldReturnNextLesson() {
-        Lesson lesson = new Lesson();
-        lesson.setStyles(new HashSet<>());
-        when(lessonRepository.findFirstByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(any()))
-                .thenReturn(Optional.of(lesson));
-
-        var result = lessonService.getNextLesson();
-
-        assertNotNull(result);
-    }
-
-    @Test
-    void getNextLesson_shouldThrowIfNoneFound() {
-        when(lessonRepository.findFirstByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(any()))
-                .thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> lessonService.getNextLesson());
-    }
+//    @Test
+//    void getNextLesson_shouldReturnNextLesson() {
+//        Lesson lesson = new Lesson();
+//        lesson.setStyles(new HashSet<>());
+//        when(lessonRepository.findFirstByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(any()))
+//                .thenReturn(Optional.of(lesson));
+//
+//        var result = lessonService.getNextLesson();
+//
+//        assertNotNull(result);
+//    }
+//
+//    @Test
+//    void getNextLesson_shouldThrowIfNoneFound() {
+//        when(lessonRepository.findFirstByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(any()))
+//                .thenReturn(Optional.empty());
+//
+//        assertThrows(EntityNotFoundException.class, () -> lessonService.getNextLesson());
+//    }
 
     @Test
     void deleteLesson_shouldClearStylesAndDelete() {

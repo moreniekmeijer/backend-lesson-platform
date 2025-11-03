@@ -34,8 +34,8 @@ public class LessonController {
     }
 
     @GetMapping("/next")
-    public ResponseEntity<LessonResponseDto> getNextLesson() {
-        return ResponseEntity.ok(lessonService.getNextLesson());
+    public ResponseEntity<List<LessonResponseDto>> getNextLessons() {
+        return ResponseEntity.ok(lessonService.getNextLessons());
     }
 
     @DeleteMapping("/{id}")
