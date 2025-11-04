@@ -14,9 +14,7 @@ import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.core.io.Resource;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -158,9 +156,21 @@ public class MaterialService {
         return fileService.generateSignedUrl(material.getFileName(), download, material.getTitle());
     }
 
-    public void ensureExists(Long id) {
-        if (!materialRepository.existsById(id)) {
-            throw new EntityNotFoundException("Material not found with id: " + id);
-        }
+    @Transactional
+    public MaterialResponseDto replaceMaterialFile(Long materialId, String newObjectName, FileType fileType) {
+        Material material = materialRepository.findById(materialId)
+                .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
+
+        material.setFileName(newObjectName);
+        material.setFileType(fileType);
+
+        Material updated = materialRepository.save(material);
+        return MaterialMapper.toResponseDto(updated);
     }
+
+//    public void ensureExists(Long id) {
+//        if (!materialRepository.existsById(id)) {
+//            throw new EntityNotFoundException("Material not found with id: " + id);
+//        }
+//    }
 }

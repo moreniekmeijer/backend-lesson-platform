@@ -17,7 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.springframework.http.HttpHeaders;
 
 @RestController
@@ -32,11 +36,37 @@ public class MaterialController {
         this.fileService = fileService;
     }
 
+    /**
+     * Create a material (metadata) and optionally return a signed upload URL.
+     * Frontend can upload the file directly to GCS using the returned uploadUrl.
+     */
     @PostMapping
-    public ResponseEntity<MaterialResponseDto> addMaterial(@Valid @RequestBody MaterialInputDto materialInputDto) {
+    public ResponseEntity<Map<String, Object>> addMaterialWithUpload(
+            @Valid @RequestBody MaterialInputDto materialInputDto,
+            @RequestParam(required = false) String filename,
+            @RequestParam(required = false) String contentType
+    ) {
+        // 1. Create the material record in DB
         MaterialResponseDto savedMaterial = materialService.addMaterial(materialInputDto);
+
+        // Prepare base response
+        Map<String, Object> response = new HashMap<>();
+        response.put("material", savedMaterial);
+
+        // 2. If a file is provided, generate signed upload URL
+        if (filename != null && contentType != null) {
+            FileType fileType = fileService.getFileTypeFromFilename(filename);
+
+            String objectName = UUID.randomUUID() + "_" + filename;
+            String uploadUrl = fileService.generateSignedUploadUrl(objectName, contentType);
+
+            response.put("uploadUrl", uploadUrl);
+            response.put("objectName", objectName);
+            response.put("fileType", fileType.name());
+        }
+
         URI location = URIUtil.createResourceUri(savedMaterial.getId());
-        return ResponseEntity.created(location).body(savedMaterial);
+        return ResponseEntity.created(location).body(response);
     }
 
     @GetMapping
@@ -65,26 +95,32 @@ public class MaterialController {
         return ResponseEntity.noContent().build();
     }
 
-    @Transactional
-    @PostMapping("/{id}/file")
-    public ResponseEntity<MaterialResponseDto> addFileToMaterial(
+    /**
+     * Called after the frontend has finished uploading the file to GCS directly.
+     * Associates the uploaded file with the material record.
+     */
+    @PostMapping("/{id}/confirm-upload")
+    public ResponseEntity<MaterialResponseDto> confirmUpload(
             @PathVariable Long id,
-            @RequestParam("file") MultipartFile file
-    ) throws IOException {
-        MaterialResponseDto material = materialService.getMaterialById(id);
-        String materialTitle = material.getTitle();
+            @RequestBody Map<String, String> payload
+    ) {
+        String objectName = payload.get("objectName");
+        FileType fileType = FileType.valueOf(payload.get("fileType"));
 
-        materialService.ensureExists(id);
+        System.out.println("[confirmUpload] objectName=" + objectName + ", fileType=" + fileType);
 
-        FileResponseDto fileResponse = fileService.saveFile(file, materialTitle);
+        // 1. Koppel bestand aan material
+        MaterialResponseDto material = materialService.assignToMaterial(objectName, id, fileType);
+        System.out.println("[confirmUpload] Material gekoppeld: " + material);
 
-        MaterialResponseDto savedMaterial = materialService.assignToMaterial(
-                fileResponse.getObjectName(),
-                id,
-                fileResponse.getFileType()
-        );
+        // 2. Async MOV → MP4 conversie (callback update DB)
+        if (fileType == FileType.VIDEO && objectName.toLowerCase().endsWith(".mov")) {
+            fileService.convertMovToMp4Async(objectName, newObjectName -> {
+                materialService.replaceMaterialFile(id, newObjectName, FileType.VIDEO);
+            });
+        }
 
-        return ResponseEntity.ok(savedMaterial);
+        return ResponseEntity.ok(material);
     }
 
     @GetMapping("/{id}/file")
@@ -103,7 +139,10 @@ public class MaterialController {
     }
 
     @PostMapping("/{id}/link")
-    public ResponseEntity<MaterialResponseDto> addLinkToMaterial(@PathVariable Long id, @Valid @RequestBody LinkInputDto linkInputDto) throws IOException {
+    public ResponseEntity<MaterialResponseDto> addLinkToMaterial(
+            @PathVariable Long id,
+            @Valid @RequestBody LinkInputDto linkInputDto
+    ) throws IOException {
         String link = linkInputDto.getLink();
         MaterialResponseDto savedMaterial = materialService.assignToMaterial(link, id, FileType.LINK);
         return ResponseEntity.ok(savedMaterial);
