@@ -1,4 +1,4 @@
-package nl.moreniekmeijer.lessonplatform.services;
+package nl.moreniekmeijer.lessonplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package nl.moreniekmeijer.lessonplatform.services;
+package nl.moreniekmeijer.lessonplatform.service;
 
 import nl.moreniekmeijer.lessonplatform.dtos.UserDetailsDto;
 import nl.moreniekmeijer.lessonplatform.models.Authority;

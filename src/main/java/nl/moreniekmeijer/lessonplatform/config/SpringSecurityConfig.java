@@ -1,7 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.config;
 
 import nl.moreniekmeijer.lessonplatform.filter.JwtRequestFilter;
-import nl.moreniekmeijer.lessonplatform.services.CustomUserDetailsService;
+import nl.moreniekmeijer.lessonplatform.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

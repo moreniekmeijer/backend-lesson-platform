@@ -2,7 +2,7 @@ package nl.moreniekmeijer.lessonplatform.controllers;
 
 import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.*;
-import nl.moreniekmeijer.lessonplatform.services.UserService;
+import nl.moreniekmeijer.lessonplatform.service.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import nl.moreniekmeijer.lessonplatform.exceptions.BadRequestException;

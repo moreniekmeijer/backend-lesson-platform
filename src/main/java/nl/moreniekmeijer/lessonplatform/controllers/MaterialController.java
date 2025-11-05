@@ -1,19 +1,17 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import nl.moreniekmeijer.lessonplatform.dtos.FileResponseDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LinkInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
-import nl.moreniekmeijer.lessonplatform.services.FileService;
-import nl.moreniekmeijer.lessonplatform.services.MaterialService;
+import nl.moreniekmeijer.lessonplatform.service.CloudTasksService;
+import nl.moreniekmeijer.lessonplatform.service.FileService;
+import nl.moreniekmeijer.lessonplatform.service.MaterialService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
@@ -30,10 +28,12 @@ public class MaterialController {
 
     private final MaterialService materialService;
     private final FileService fileService;
+    private final CloudTasksService cloudTasksService;
 
-    public MaterialController(MaterialService materialService, FileService fileService) {
+    public MaterialController(MaterialService materialService, FileService fileService, CloudTasksService cloudTasksService) {
         this.materialService = materialService;
         this.fileService = fileService;
+        this.cloudTasksService = cloudTasksService;
     }
 
     /**
@@ -114,10 +114,8 @@ public class MaterialController {
         System.out.println("[confirmUpload] Material gekoppeld: " + material);
 
         // 2. Async MOV → MP4 conversie (callback update DB)
-        if (fileType == FileType.VIDEO && objectName.toLowerCase().endsWith(".mov")) {
-            fileService.convertMovToMp4Async(objectName, newObjectName -> {
-                materialService.replaceMaterialFile(id, newObjectName, FileType.VIDEO);
-            });
+        if (fileType == FileType.VIDEO && objectName.endsWith(".mov")) {
+            cloudTasksService.enqueueVideoConversion(id, objectName);
         }
 
         return ResponseEntity.ok(material);

@@ -1,4 +1,4 @@
-package nl.moreniekmeijer.lessonplatform.services;
+package nl.moreniekmeijer.lessonplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonInputDto;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 

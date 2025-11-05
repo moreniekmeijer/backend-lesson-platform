@@ -1,4 +1,4 @@
-package nl.moreniekmeijer.lessonplatform.services;
+package nl.moreniekmeijer.lessonplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonInputDto;

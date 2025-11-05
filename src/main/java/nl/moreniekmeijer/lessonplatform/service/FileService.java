@@ -1,4 +1,4 @@
-package nl.moreniekmeijer.lessonplatform.services;
+package nl.moreniekmeijer.lessonplatform.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
@@ -14,8 +14,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -23,7 +21,6 @@ import java.util.function.Consumer;
 public class FileService {
 
     private final Storage storage;
-//    private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final String bucketName;
 
     public FileService(
@@ -45,39 +42,19 @@ public class FileService {
         this.storage = optionsBuilder.build().getService();
     }
 
-    @Async
-    public void convertMovToMp4Async(String objectName, Consumer<String> onConverted) {
-        try {
-            System.out.println("[convertMovToMp4Async] Download MOV: " + objectName);
+    public Storage getStorage() {
+        return storage;
+    }
 
-            File tempMov = File.createTempFile("mov_download_", ".mov");
-            Blob blob = storage.get(BlobId.of(bucketName, objectName));
-            System.out.println("[convertMovToMp4Async] Blob gevonden: " + (blob != null));
+    public String getBucketName() {
+        return bucketName;
+    }
 
-            blob.downloadTo(tempMov.toPath());
-
-            System.out.println("[convertMovToMp4Async] Converting to MP4...");
-            File mp4File = convertMovToMp4(tempMov);
-            tempMov.delete();
-
-            String newObjectName = objectName.replace(".mov", ".mp4");
-            BlobId newBlobId = BlobId.of(bucketName, newObjectName);
-            BlobInfo blobInfo = BlobInfo.newBuilder(newBlobId)
-                    .setContentType("video/mp4")
-                    .build();
-            storage.create(blobInfo, Files.readAllBytes(mp4File.toPath()));
-            mp4File.delete();
-
-            System.out.println("[convertMovToMp4Async] MP4 uploaded: " + newObjectName);
-
-            onConverted.accept(newObjectName);
-
-            blob.delete();
-            System.out.println("[convertMovToMp4Async] Original MOV deleted.");
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void uploadFile(File file, String objectName, String contentType) throws IOException {
+        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, objectName))
+                .setContentType(contentType)
+                .build();
+        storage.create(blobInfo, Files.readAllBytes(file.toPath()));
     }
 
     public File convertMovToMp4(File movFile) throws IOException {
@@ -175,15 +152,15 @@ public class FileService {
         };
     }
 
-    public String getMimeTypeFromFilename(String filename) {
-        String ext = getFileExtension(filename).toLowerCase();
-        return switch (ext) {
-            case "pdf" -> "application/pdf";
-            case "mp4" -> "video/mp4";
-            case "mov" -> "video/quicktime";
-            case "jpg", "jpeg" -> "image/jpeg";
-            case "png" -> "image/png";
-            default -> "application/octet-stream";
-        };
-    }
+//    public String getMimeTypeFromFilename(String filename) {
+//        String ext = getFileExtension(filename).toLowerCase();
+//        return switch (ext) {
+//            case "pdf" -> "application/pdf";
+//            case "mp4" -> "video/mp4";
+//            case "mov" -> "video/quicktime";
+//            case "jpg", "jpeg" -> "image/jpeg";
+//            case "png" -> "image/png";
+//            default -> "application/octet-stream";
+//        };
+//    }
 }

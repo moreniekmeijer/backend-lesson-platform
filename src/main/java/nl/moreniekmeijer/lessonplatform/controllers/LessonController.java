@@ -3,7 +3,7 @@ package nl.moreniekmeijer.lessonplatform.controllers;
 import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.LessonResponseDto;
-import nl.moreniekmeijer.lessonplatform.services.LessonService;
+import nl.moreniekmeijer.lessonplatform.service.LessonService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
