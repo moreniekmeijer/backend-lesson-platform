@@ -33,6 +33,8 @@ public class VideoConverterController {
         String objectName = request.objectName();
         Long materialId = request.materialId();
 
+        System.out.println("[CloudTasks Controller] New conversion request received for " + objectName);
+
         try {
             // 1. Download MOV van GCS naar temp file
             File tempMov = File.createTempFile("mov_download_", ".mov");

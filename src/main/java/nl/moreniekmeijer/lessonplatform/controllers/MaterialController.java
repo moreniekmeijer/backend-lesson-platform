@@ -114,7 +114,7 @@ public class MaterialController {
         System.out.println("[confirmUpload] Material gekoppeld: " + material);
 
         // 2. Async MOV → MP4 conversie (callback update DB)
-        if (fileType == FileType.VIDEO && objectName.endsWith(".mov")) {
+        if (fileType == FileType.VIDEO && objectName.toLowerCase().endsWith(".mov")) {
             cloudTasksService.enqueueVideoConversion(id, objectName);
         }
 
