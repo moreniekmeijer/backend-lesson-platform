@@ -52,6 +52,8 @@ public class FileService {
 
             File tempMov = File.createTempFile("mov_download_", ".mov");
             Blob blob = storage.get(BlobId.of(bucketName, objectName));
+            System.out.println("[convertMovToMp4Async] Blob gevonden: " + (blob != null));
+
             blob.downloadTo(tempMov.toPath());
 
             System.out.println("[convertMovToMp4Async] Converting to MP4...");
@@ -85,13 +87,20 @@ public class FileService {
                 "-y",
                 "-i", movFile.getAbsolutePath(),
                 "-vcodec", "libx264",
+                "-preset", "ultrafast",
                 "-crf", "28",
-                "-preset", "fast",
                 "-vf", "scale=720:-2",
-                "-acodec", "aac",
+                "-pix_fmt", "yuv420p",
+                "-movflags", "+faststart",
+                "-c:a", "aac",
+                "-ar", "44100",
+                "-ac", "2",
                 "-b:a", "128k",
+                "-threads", String.valueOf(Runtime.getRuntime().availableProcessors()),
+                "-loglevel", "error",
                 outputFile.getAbsolutePath()
         );
+
         pb.inheritIO();
         try {
             int exitCode = pb.start().waitFor();
