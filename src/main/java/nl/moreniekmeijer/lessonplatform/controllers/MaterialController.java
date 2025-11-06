@@ -114,10 +114,22 @@ public class MaterialController {
         System.out.println("[confirmUpload] Material gekoppeld: " + material);
 
         // 2. Async MOV → MP4 conversie (callback update DB)
-        if (fileType == FileType.VIDEO && objectName.toLowerCase().endsWith(".mov")) {
-            System.out.println("[DEBUG] fileType=" + fileType + ", objectName=" + objectName);
+        if (fileType == FileType.VIDEO) {
+            // Trim whitespace en vergelijk case-insensitive
+            String trimmedName = objectName.trim();
+            if (trimmedName.toLowerCase().endsWith(".mov")) {
+                System.out.println("[DEBUG] Enqueueing Cloud Task for MOV file: " + trimmedName);
 
-            cloudTasksService.enqueueVideoConversion(id, objectName);
+                try {
+                    cloudTasksService.enqueueVideoConversion(id, trimmedName);
+                    System.out.println("[DEBUG] Cloud Task successfully created for materialId=" + id);
+                } catch (Exception e) {
+                    System.err.println("[ERROR] Failed to enqueue Cloud Task: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("[DEBUG] File is not a MOV, skipping Cloud Task: " + trimmedName);
+            }
         }
 
         return ResponseEntity.ok(material);
