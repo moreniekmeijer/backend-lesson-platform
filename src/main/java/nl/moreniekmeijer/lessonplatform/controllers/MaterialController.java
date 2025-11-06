@@ -115,6 +115,8 @@ public class MaterialController {
 
         // 2. Async MOV → MP4 conversie (callback update DB)
         if (fileType == FileType.VIDEO && objectName.toLowerCase().endsWith(".mov")) {
+            System.out.println("[DEBUG] fileType=" + fileType + ", objectName=" + objectName);
+
             cloudTasksService.enqueueVideoConversion(id, objectName);
         }
 
