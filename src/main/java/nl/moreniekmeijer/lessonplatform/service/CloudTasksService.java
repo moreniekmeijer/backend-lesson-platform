@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class CloudTasksService {
 
-    private final String projectId = "PROJECT_ID";
-    private final String location = "europe-west4";
+    private final String projectId = "bright-petal-476314-d4";
+    private final String location = "europe-west1";
     private final String queue = "video-conversion-queue";
-    private final String targetUrl = "https://video-converter-service-xyz.a.run.app/convert";
+    private final String targetUrl = "https://video-converter-service-250364193521.europe-west4.run.app/convert";
 
     public void enqueueVideoConversion(Long materialId, String objectName) {
         try (CloudTasksClient client = CloudTasksClient.create()) {
