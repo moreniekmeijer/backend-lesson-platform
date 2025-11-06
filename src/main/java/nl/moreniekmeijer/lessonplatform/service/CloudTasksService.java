@@ -17,6 +17,8 @@ public class CloudTasksService {
     private final String targetUrl = "https://video-converter-service-2-250364193521.europe-west1.run.app/convert";
 
     public void enqueueVideoConversion(Long materialId, String objectName) {
+        System.out.println("Creating task for materialId=" + materialId + ", objectName=" + objectName);
+
         try (CloudTasksClient client = CloudTasksClient.create()) {
             Task.Builder taskBuilder = Task.newBuilder()
                     .setHttpRequest(HttpRequest.newBuilder()
