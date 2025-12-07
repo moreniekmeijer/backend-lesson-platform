@@ -24,22 +24,23 @@ public class FileService {
     private final String bucketName;
 
     public FileService(
-            @Value("${gcs.bucket-name}") String bucketName,
-            @Value("${gcs.credentials.file:}") String credentialsPath
+            @Value("${gcs.bucket-name}") String bucketName
+//            @Value("${gcs.credentials.file:}") String credentialsPath
     ) throws IOException {
         this.bucketName = bucketName;
+        this.storage = StorageOptions.getDefaultInstance().getService();
 
-        StorageOptions.Builder optionsBuilder = StorageOptions.newBuilder();
-
-        if (credentialsPath != null && !credentialsPath.isBlank()) {
-            optionsBuilder.setCredentials(
-                    ServiceAccountCredentials.fromStream(new FileInputStream(credentialsPath))
-            );
-        } else {
-            optionsBuilder.setCredentials(GoogleCredentials.getApplicationDefault());
-        }
-
-        this.storage = optionsBuilder.build().getService();
+//        StorageOptions.Builder optionsBuilder = StorageOptions.newBuilder();
+//
+//        if (credentialsPath != null && !credentialsPath.isBlank()) {
+//            optionsBuilder.setCredentials(
+//                    ServiceAccountCredentials.fromStream(new FileInputStream(credentialsPath))
+//            );
+//        } else {
+//            optionsBuilder.setCredentials(GoogleCredentials.getApplicationDefault());
+//        }
+//
+//        this.storage = optionsBuilder.build().getService();
     }
 
     public Storage getStorage() {
