@@ -104,8 +104,20 @@ public class MaterialController {
             @PathVariable Long id,
             @RequestBody Map<String, String> payload
     ) {
+        System.out.println("[DEBUG] confirmUpload payload: " + payload);
+
         String objectName = payload.get("objectName");
-        FileType fileType = FileType.valueOf(payload.get("fileType"));
+        FileType fileType = null;
+
+        // Parse fileType met logging
+        try {
+            fileType = FileType.valueOf(payload.get("fileType"));
+            System.out.println("[DEBUG] Parsed fileType: " + fileType);
+        } catch (Exception e) {
+            System.err.println("[ERROR] Could not parse fileType: '" + payload.get("fileType") + "'");
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
 
         System.out.println("[confirmUpload] objectName=" + objectName + ", fileType=" + fileType);
 
@@ -117,6 +129,8 @@ public class MaterialController {
         if (fileType == FileType.VIDEO) {
             // Trim whitespace en vergelijk case-insensitive
             String trimmedName = objectName.trim();
+            System.out.println("[DEBUG] Trimmed objectName: '" + trimmedName + "'");
+
             if (trimmedName.toLowerCase().endsWith(".mov")) {
                 System.out.println("[DEBUG] Enqueueing Cloud Task for MOV file: " + trimmedName);
 
@@ -130,6 +144,8 @@ public class MaterialController {
             } else {
                 System.out.println("[DEBUG] File is not a MOV, skipping Cloud Task: " + trimmedName);
             }
+        } else {
+            System.out.println("[DEBUG] FileType is not VIDEO, skipping Cloud Task: " + fileType);
         }
 
         return ResponseEntity.ok(material);

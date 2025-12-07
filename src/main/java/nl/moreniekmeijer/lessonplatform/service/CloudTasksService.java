@@ -27,6 +27,7 @@ public class CloudTasksService {
                     .putHeaders("Content-Type", "application/json")
                     .setOidcToken(OidcToken.newBuilder()
                             .setServiceAccountEmail(serviceAccountEmail)
+                            .setAudience(targetUrl)
                             .build())
                     .build();
 
