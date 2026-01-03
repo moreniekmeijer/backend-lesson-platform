@@ -30,6 +30,7 @@ public class LessonService {
         this.styleRepository = styleRepository;
     }
 
+    @Transactional
     public LessonResponseDto createLesson(LessonInputDto lessonInputDto) {
         if ((lessonInputDto.getStyleIds() == null || lessonInputDto.getStyleIds().isEmpty()) &&
                 (lessonInputDto.getStyleNames() == null || lessonInputDto.getStyleNames().isEmpty())) {

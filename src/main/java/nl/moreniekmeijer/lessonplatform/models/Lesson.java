@@ -25,7 +25,7 @@ public class Lesson {
     @Column(name = "role")
     private Set<String> allowedRoles = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "lessons_styles",
             joinColumns = @JoinColumn(name = "lessons_id"),
