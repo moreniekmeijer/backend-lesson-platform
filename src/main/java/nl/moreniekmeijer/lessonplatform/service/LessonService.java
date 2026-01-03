@@ -11,6 +11,7 @@ import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -59,6 +60,7 @@ public class LessonService {
         return LessonMapper.toResponseDto(savedLesson);
     }
 
+    @Transactional(readOnly = true)
     public List<LessonResponseDto> getAllLessons() {
         Set<String> userRoles = getCurrentUserRoles();
 
@@ -72,6 +74,7 @@ public class LessonService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<LessonResponseDto> getNextLessons() {
         LocalDateTime now = LocalDateTime.now();
         Set<String> userRoles = getCurrentUserRoles();
@@ -104,6 +107,7 @@ public class LessonService {
                 .toList();
     }
 
+    @Transactional
     public void deleteLesson(Long id) {
         Lesson foundLesson = lessonRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Lesson not found with id: " + id));

@@ -1,7 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.StyleMapper;
@@ -12,6 +11,7 @@ import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -36,6 +36,7 @@ public class StyleService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<StyleResponseDto> getAllStyles() {
         List<Style> styles = styleRepository.findAll();
         return styles.stream()
@@ -43,6 +44,7 @@ public class StyleService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public StyleResponseDto getStyleById(Long id) {
         Style foundStyle = styleRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Style not found with id: " + id));
         return StyleMapper.toResponseDto(foundStyle);
