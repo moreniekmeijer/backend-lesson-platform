@@ -158,6 +158,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void assignMaterialToUser(String username, Long materialId) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -179,6 +180,7 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
     public void removeMaterialFromUser(String username, Long materialId) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));

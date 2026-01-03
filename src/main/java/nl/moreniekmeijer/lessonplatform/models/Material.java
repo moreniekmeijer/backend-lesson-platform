@@ -28,7 +28,7 @@ public class Material {
     @JsonIgnore
     private Style style;
 
-    @ManyToMany(mappedBy = "bookmarkedMaterials", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "bookmarkedMaterials")
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 
