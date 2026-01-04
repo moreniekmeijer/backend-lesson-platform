@@ -5,7 +5,6 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.storage.*;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -15,7 +14,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 @Service
 public class FileService {
@@ -58,38 +56,6 @@ public class FileService {
         storage.create(blobInfo, Files.readAllBytes(file.toPath()));
     }
 
-    public File convertMovToMp4(File movFile) throws IOException {
-        File outputFile = File.createTempFile("converted_", ".mp4");
-        ProcessBuilder pb = new ProcessBuilder(
-                "ffmpeg",
-                "-y",
-                "-i", movFile.getAbsolutePath(),
-                "-vcodec", "libx264",
-                "-preset", "ultrafast",
-                "-crf", "28",
-                "-vf", "scale=720:-2",
-                "-pix_fmt", "yuv420p",
-                "-movflags", "+faststart",
-                "-c:a", "aac",
-                "-ar", "44100",
-                "-ac", "2",
-                "-b:a", "128k",
-                "-threads", String.valueOf(Runtime.getRuntime().availableProcessors()),
-                "-loglevel", "error",
-                outputFile.getAbsolutePath()
-        );
-
-        pb.inheritIO();
-        try {
-            int exitCode = pb.start().waitFor();
-            if (exitCode != 0) throw new RuntimeException("ffmpeg conversion failed");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("ffmpeg interrupted", e);
-        }
-        return outputFile;
-    }
-
     public String generateSignedUploadUrl(String objectName, String contentType) {
         BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, objectName))
                 .setContentType(contentType)
@@ -109,8 +75,12 @@ public class FileService {
         if (blob == null) throw new RuntimeException("File not found: " + objectName);
 
         String extension = getFileExtension(objectName);
-        String safeTitle = (materialTitle != null) ? materialTitle.replaceAll("[^a-zA-Z0-9-_]", "_") : objectName;
-        String finalFileName = safeTitle + "." + extension;
+        String baseName = (materialTitle != null && !materialTitle.isBlank())
+                ? materialTitle
+                : objectName.replaceFirst("\\.[^.]+$", "");
+
+        String safeBase = baseName.replaceAll("[^a-zA-Z0-9-_]", "_");
+        String finalFileName = safeBase + "." + extension;
         String disposition = download ? "attachment; filename=\"" + finalFileName + "\""
                 : "inline; filename=\"" + finalFileName + "\"";
         Map<String, String> queryParams = Map.of("response-content-disposition", disposition);

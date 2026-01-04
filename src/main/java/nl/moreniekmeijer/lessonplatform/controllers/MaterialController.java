@@ -5,9 +5,9 @@ import nl.moreniekmeijer.lessonplatform.dtos.LinkInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
-import nl.moreniekmeijer.lessonplatform.service.CloudTasksService;
 import nl.moreniekmeijer.lessonplatform.service.FileService;
 import nl.moreniekmeijer.lessonplatform.service.MaterialService;
+import nl.moreniekmeijer.lessonplatform.service.VideoProcessingService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +28,12 @@ public class MaterialController {
 
     private final MaterialService materialService;
     private final FileService fileService;
-    private final CloudTasksService cloudTasksService;
+    private final VideoProcessingService videoProcessingService;
 
-    public MaterialController(MaterialService materialService, FileService fileService, CloudTasksService cloudTasksService) {
+    public MaterialController(MaterialService materialService, FileService fileService, VideoProcessingService videoProcessingService) {
         this.materialService = materialService;
         this.fileService = fileService;
-        this.cloudTasksService = cloudTasksService;
+        this.videoProcessingService = videoProcessingService;
     }
 
     /**
@@ -46,14 +46,11 @@ public class MaterialController {
             @RequestParam(required = false) String filename,
             @RequestParam(required = false) String contentType
     ) {
-        // 1. Create the material record in DB
         MaterialResponseDto savedMaterial = materialService.addMaterial(materialInputDto);
 
-        // Prepare base response
         Map<String, Object> response = new HashMap<>();
         response.put("material", savedMaterial);
 
-        // 2. If a file is provided, generate signed upload URL
         if (filename != null && contentType != null) {
             FileType fileType = fileService.getFileTypeFromFilename(filename);
 
@@ -95,57 +92,19 @@ public class MaterialController {
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Called after the frontend has finished uploading the file to GCS directly.
-     * Associates the uploaded file with the material record.
-     */
     @PostMapping("/{id}/confirm-upload")
     public ResponseEntity<MaterialResponseDto> confirmUpload(
             @PathVariable Long id,
             @RequestBody Map<String, String> payload
     ) {
-        System.out.println("[DEBUG] confirmUpload payload: " + payload);
-
         String objectName = payload.get("objectName");
-        FileType fileType = null;
+        FileType fileType = FileType.valueOf(payload.get("fileType"));
 
-        // Parse fileType met logging
-        try {
-            fileType = FileType.valueOf(payload.get("fileType"));
-            System.out.println("[DEBUG] Parsed fileType: " + fileType);
-        } catch (Exception e) {
-            System.err.println("[ERROR] Could not parse fileType: '" + payload.get("fileType") + "'");
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        MaterialResponseDto material =
+                materialService.assignToMaterial(objectName, id, fileType);
 
-        System.out.println("[confirmUpload] objectName=" + objectName + ", fileType=" + fileType);
-
-        // 1. Koppel bestand aan material
-        MaterialResponseDto material = materialService.assignToMaterial(objectName, id, fileType);
-        System.out.println("[confirmUpload] Material gekoppeld: " + material);
-
-        // 2. Async MOV → MP4 conversie (callback update DB)
-        if (fileType == FileType.VIDEO) {
-            // Trim whitespace en vergelijk case-insensitive
-            String trimmedName = objectName.trim();
-            System.out.println("[DEBUG] Trimmed objectName: '" + trimmedName + "'");
-
-            if (trimmedName.toLowerCase().endsWith(".mov")) {
-                System.out.println("[DEBUG] Enqueueing Cloud Task for MOV file: " + trimmedName);
-
-                try {
-                    cloudTasksService.enqueueVideoConversion(id, trimmedName);
-                    System.out.println("[DEBUG] Cloud Task successfully created for materialId=" + id);
-                } catch (Exception e) {
-                    System.err.println("[ERROR] Failed to enqueue Cloud Task: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            } else {
-                System.out.println("[DEBUG] File is not a MOV, skipping Cloud Task: " + trimmedName);
-            }
-        } else {
-            System.out.println("[DEBUG] FileType is not VIDEO, skipping Cloud Task: " + fileType);
+        if (fileType == FileType.VIDEO && objectName.toLowerCase().endsWith(".mov")) {
+            videoProcessingService.compressAsync(id, objectName);
         }
 
         return ResponseEntity.ok(material);
