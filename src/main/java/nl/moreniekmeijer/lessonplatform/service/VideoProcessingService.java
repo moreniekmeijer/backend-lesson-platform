@@ -29,7 +29,7 @@ public class VideoProcessingService {
      * Safe to call from controller.
      */
     @Async
-    public void compressAsync(Long materialId, String objectName) {
+    public void processSync(Long materialId, String objectName) {
         System.out.println("[VideoProcessing] Starting compression for " + objectName);
 
         File tempMov = null;

@@ -7,7 +7,7 @@ import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.service.FileService;
 import nl.moreniekmeijer.lessonplatform.service.MaterialService;
-import nl.moreniekmeijer.lessonplatform.service.VideoProcessingService;
+import nl.moreniekmeijer.lessonplatform.service.PubSubService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +28,12 @@ public class MaterialController {
 
     private final MaterialService materialService;
     private final FileService fileService;
-    private final VideoProcessingService videoProcessingService;
+    private final PubSubService pubSubService;
 
-    public MaterialController(MaterialService materialService, FileService fileService, VideoProcessingService videoProcessingService) {
+    public MaterialController(MaterialService materialService, FileService fileService, PubSubService pubSubService) {
         this.materialService = materialService;
         this.fileService = fileService;
-        this.videoProcessingService = videoProcessingService;
+        this.pubSubService = pubSubService;
     }
 
     /**
@@ -96,7 +96,7 @@ public class MaterialController {
     public ResponseEntity<MaterialResponseDto> confirmUpload(
             @PathVariable Long id,
             @RequestBody Map<String, String> payload
-    ) {
+    ) throws Exception {
         String objectName = payload.get("objectName");
         FileType fileType = FileType.valueOf(payload.get("fileType"));
 
@@ -104,7 +104,7 @@ public class MaterialController {
                 materialService.assignToMaterial(objectName, id, fileType);
 
         if (fileType == FileType.VIDEO && objectName.toLowerCase().endsWith(".mov")) {
-            videoProcessingService.compressAsync(id, objectName);
+            pubSubService.publishVideoJob(material.getId(), objectName);
         }
 
         return ResponseEntity.ok(material);
