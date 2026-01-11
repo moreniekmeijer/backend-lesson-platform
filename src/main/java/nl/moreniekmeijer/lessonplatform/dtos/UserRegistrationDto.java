@@ -1,57 +1,53 @@
 package nl.moreniekmeijer.lessonplatform.dtos;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public class UserRegistrationDto {
 
-    @NotNull(message = "Username is required")
-    @Size(min = 3, max = 20, message = "Gebruikersnaam moet tussen 3 en 20 tekens bevatten")
-    @Pattern(
-            regexp = "^[a-zA-Z][a-zA-Z0-9._ ]{2,19}$",
-            message = "Gebruikersnaam moet beginnen met een letter en mag alleen letters, cijfers, punten, underscores of spaties bevatten"
-    )
-    private String username;
-
+    @NotNull
+    @Email(message = "Ongeldig e-mailadres")
     private String email;
 
-    @NotNull(message = "Password is required")
+    @NotNull(message = "Wachtwoord is verplicht")
     @Size(min = 8, message = "Wachtwoord moet minstens 8 tekens bevatten")
     private String password;
 
-    @NotNull(message = "Invite code is required")
+    @NotNull(message = "Invite code is verplicht")
     private String inviteCode;
 
-    public String getUsername() {
-        return username;
-    }
+    private String fullName;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
+    public @NotNull @Email(message = "Ongeldig e-mailadres") String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(@NotNull @Email(message = "Ongeldig e-mailadres") String email) {
         this.email = email;
     }
 
-    public String getPassword() {
+    public @NotNull(message = "Wachtwoord is verplicht") @Size(min = 8, message = "Wachtwoord moet minstens 8 tekens bevatten") String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(@NotNull(message = "Wachtwoord is verplicht") @Size(min = 8, message = "Wachtwoord moet minstens 8 tekens bevatten") String password) {
         this.password = password;
     }
 
-    public String getInviteCode() {
+    public @NotNull(message = "Invite code is verplicht") String getInviteCode() {
         return inviteCode;
     }
 
-    public void setInviteCode(String inviteCode) {
+    public void setInviteCode(@NotNull(message = "Invite code is verplicht") String inviteCode) {
         this.inviteCode = inviteCode;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 }

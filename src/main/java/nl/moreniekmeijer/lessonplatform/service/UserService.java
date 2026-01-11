@@ -3,7 +3,6 @@ package nl.moreniekmeijer.lessonplatform.service;
 import jakarta.persistence.EntityNotFoundException;
 import nl.moreniekmeijer.lessonplatform.dtos.*;
 import nl.moreniekmeijer.lessonplatform.exceptions.InvalidInviteCodeException;
-import nl.moreniekmeijer.lessonplatform.exceptions.UsernameAlreadyExistsException;
 import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
 import nl.moreniekmeijer.lessonplatform.mappers.UserMapper;
 import nl.moreniekmeijer.lessonplatform.models.*;
@@ -13,15 +12,16 @@ import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -53,18 +53,18 @@ public class UserService {
     }
 
     public UserResponseDto addUser(UserRegistrationDto userInputDto) {
-        if (userRepository.existsById(userInputDto.getUsername())) {
-            throw new UsernameAlreadyExistsException("Deze gebruikersnaam is al in gebruik.");
+
+        if (userRepository.existsByEmail(userInputDto.getEmail())) {
+            throw new IllegalArgumentException("Dit e-mailadres is al in gebruik.");
         }
 
         UserRole role = getRoleFromInviteCode(userInputDto.getInviteCode());
 
         User user = UserMapper.toEntity(userInputDto);
         user.setPassword(passwordEncoder.encode(userInputDto.getPassword()));
+        user.addAuthority("ROLE_" + role.name());
+
         User savedUser = userRepository.save(user);
-
-        addAuthority(savedUser.getUsername(), "ROLE_" + role.name());
-
         return UserMapper.toResponseDto(savedUser);
     }
 
@@ -87,26 +87,37 @@ public class UserService {
                 .toList();
     }
 
-    public UserResponseDto getUser(String username) {
-        User user = userRepository.findById(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+    public UserResponseDto getUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden: " + userId));
         return UserMapper.toResponseDto(user);
     }
 
-    public UserDetailsDto getUserWithPassword(String username) {
-        User user = userRepository.findById(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
-
-        return new UserDetailsDto(user.getUsername(), user.getPassword(), user.getAuthorities());
+    public User getUserEntityById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Gebruiker niet gevonden: " + userId
+                ));
     }
 
-    public UserResponseDto updateUser(String username, UserUpdateDto inputDto) {
-        User user = userRepository.findById(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Gebruiker niet gevonden: " + username));
+    public User getUserEntityByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Gebruiker niet gevonden: " + email
+                ));
+    }
 
+    public UserResponseDto updateUser(Long userId, UserUpdateDto inputDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden: " + userId));
+
+        if (!user.getEmail().equals(inputDto.getEmail()) &&
+                userRepository.existsByEmail(inputDto.getEmail())) {
+            throw new IllegalArgumentException("Dit e-mailadres is al in gebruik.");
+        }
         user.setEmail(inputDto.getEmail());
 
-        if (inputDto.getPassword() != null && !inputDto.getPassword().isBlank()) {
+        if (inputDto.getNewPassword() != null && !inputDto.getNewPassword().isBlank()) {
             if (inputDto.getCurrentPassword() == null || inputDto.getCurrentPassword().isBlank()) {
                 throw new IllegalArgumentException("Huidig wachtwoord is vereist voor wijziging.");
             }
@@ -115,65 +126,67 @@ public class UserService {
                 throw new IllegalArgumentException("Huidig wachtwoord is onjuist.");
             }
 
-            user.setPassword(passwordEncoder.encode(inputDto.getPassword()));
+            user.setPassword(passwordEncoder.encode(inputDto.getNewPassword()));
         }
 
         userRepository.save(user);
         return UserMapper.toResponseDto(user);
     }
 
-
-    public void deleteUser(String username) {
-        if (!userRepository.existsById(username)) {
-            throw new EntityNotFoundException("User not found with username: " + username);
-        }
-        userRepository.deleteById(username);
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden"));
+        userRepository.delete(user);
     }
 
-    public Set<Authority> getAuthorities(String username) {
-        if (!userRepository.existsById(username)) {
-            throw new EntityNotFoundException("User not found with username: " + username);
-        }
-        User user = userRepository.findById(username).get();
-        UserResponseDto userResponseDto = UserMapper.toResponseDto(user);
-        return userResponseDto.getAuthorities();
+    public Set<String> getAuthorities(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden: " + userId));
+
+        return user.getAuthorities().stream()
+                .map(Authority::getAuthority)
+                .collect(Collectors.toSet());
     }
 
-    public void addAuthority(String username, String authority) {
-        if (!userRepository.existsById(username)) {
-            throw new EntityNotFoundException("User not found with username: " + username);
-        }
-        User user = userRepository.findById(username).get();
-        user.addAuthority(new Authority(username, authority));
+    public void addAuthority(Long userId, String authority) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden: " + userId));
+        user.addAuthority(authority);
         userRepository.save(user);
     }
 
-    public void removeAuthority(String username, String authority) {
-        if (!userRepository.existsById(username)) {
-            throw new EntityNotFoundException("User not found with username: " + username);
-        }
-        User user = userRepository.findById(username).get();
-        Authority authorityToRemove = user.getAuthorities().stream().filter((a) -> a.getAuthority().equalsIgnoreCase(authority)).findAny().get();
-        user.removeAuthority(authorityToRemove);
-        userRepository.save(user);
+    public void removeAuthority(Long userId, String authority) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden: " + userId));
+
+        user.getAuthorities().stream()
+                .filter(a -> a.getAuthority().equalsIgnoreCase(authority))
+                .findFirst()
+                .ifPresentOrElse(
+                        a -> {
+                            user.removeAuthority(a);
+                            userRepository.save(user);
+                        },
+                        () -> { throw new EntityNotFoundException("Authority niet gevonden: " + authority); }
+                );
     }
 
     @Transactional
-    public void assignMaterialToUser(String username, Long materialId) {
-        User user = userRepository.findById(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public void assignMaterialToUser(Long userId, Long materialId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden"));
 
         Material material = materialRepository.findById(materialId)
-                .orElseThrow(() -> new RuntimeException("Material not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Material not found"));
 
         user.addMaterial(material);
         userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
-    public List<MaterialResponseDto> getBookmarkedMaterials(String username) {
-        User user = userRepository.findById(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public List<MaterialResponseDto> getBookmarkedMaterials(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden"));
 
         return user.getBookmarkedMaterials().stream()
                 .map(MaterialMapper::toResponseDto)
@@ -181,12 +194,12 @@ public class UserService {
     }
 
     @Transactional
-    public void removeMaterialFromUser(String username, Long materialId) {
-        User user = userRepository.findById(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public void removeMaterialFromUser(Long userId, Long materialId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden"));
 
         Material material = materialRepository.findById(materialId)
-                .orElseThrow(() -> new RuntimeException("Material not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Material not found"));
 
         user.removeMaterial(material);
         userRepository.save(user);
@@ -197,14 +210,12 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("Geen gebruiker gevonden met dit e-mailadres."));
 
-        // Verwijder eerdere tokens voor deze gebruiker
-        passwordResetTokenRepository.deleteByUsername(user.getUsername());
+        passwordResetTokenRepository.deleteByUser(user);
 
-        // Maak nieuw token aan
         String token = UUID.randomUUID().toString();
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(15);
 
-        PasswordResetToken resetToken = new PasswordResetToken(token, user.getUsername(), expiryDate);
+        PasswordResetToken resetToken = new PasswordResetToken(token, user, expiryDate);
         passwordResetTokenRepository.save(resetToken);
 
         String resetLink = frontendUrl + "/reset-password?token=" + token;
@@ -212,7 +223,7 @@ public class UserService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
         message.setSubject("Reset je wachtwoord");
-        message.setText("Hallo " + user.getUsername() + ",\n\n"
+        message.setText("Hallo " + user.getId() + ",\n\n"
                 + "Je kunt je wachtwoord resetten via deze link:\n"
                 + resetLink + "\n\n"
                 + "Deze link is 15 minuten geldig.\n\n");
@@ -228,13 +239,10 @@ public class UserService {
             throw new IllegalArgumentException("Token is verlopen.");
         }
 
-        User user = userRepository.findById(resetToken.getUsername())
-                .orElseThrow(() -> new EntityNotFoundException("Gebruiker niet gevonden."));
-
+        User user = resetToken.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        // Verwijder token na gebruik
-        passwordResetTokenRepository.delete(resetToken);
+        passwordResetTokenRepository.deleteByUser(user);
     }
 }

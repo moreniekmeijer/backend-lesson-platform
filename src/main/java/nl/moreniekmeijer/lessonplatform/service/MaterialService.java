@@ -46,7 +46,7 @@ public class MaterialService {
             Material savedMaterial = materialRepository.save(material);
             return MaterialMapper.toResponseDto(savedMaterial);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("4 The title must be unique. This title already exists.");
+            throw new IllegalArgumentException("5 The title must be unique. This title already exists.");
         }
     }
 

@@ -1,13 +1,14 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
 import jakarta.validation.Valid;
+import nl.moreniekmeijer.lessonplatform.config.CustomUserDetails;
 import nl.moreniekmeijer.lessonplatform.dtos.*;
 import nl.moreniekmeijer.lessonplatform.service.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
-import nl.moreniekmeijer.lessonplatform.exceptions.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -34,9 +36,9 @@ public class UserController {
     public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody UserRegistrationDto userInputDto) {
         UserResponseDto savedUser = userService.addUser(userInputDto);
 
-        URI location = URIUtil.createResourceUriUser(savedUser.getUsername());
+        URI location = URIUtil.createResourceUriUser(savedUser.getId());
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getUsername());
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
         final String jwt = jwtUtil.generateToken(userDetails);
 
         return ResponseEntity.created(location).body(new AuthenticationResponse(jwt));
@@ -48,74 +50,83 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
-    @GetMapping("/{username}")
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUser(username));
+    @PreAuthorize("#user.id == #id")
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @PreAuthorize("#username == authentication.name")
-    @PutMapping("/{username}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable String username, @Valid @RequestBody UserUpdateDto userUpdateDto) {
-        UserResponseDto updatedUser = userService.updateUser(username, userUpdateDto);
-        return ResponseEntity.ok(updatedUser);
+    @PreAuthorize("#user.id == #id")
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponseDto> updateUser(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user,
+            @Valid @RequestBody UserUpdateDto dto) {
+        return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
-    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
-    @DeleteMapping("/{username}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
-        userService.deleteUser(username);
+    @PreAuthorize("hasRole('ADMIN') or #user.id == #id")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/{username}/authorities")
-    public ResponseEntity<Object> getUserAuthorities(@PathVariable("username") String username) {
-        return ResponseEntity.ok().body(userService.getAuthorities(username));
+    @GetMapping("/{id}/authorities")
+    public ResponseEntity<Set<String>> getUserAuthorities(
+            @PathVariable Long id) {
+        return ResponseEntity.ok(userService.getAuthorities(id));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/{username}/authorities")
-    public ResponseEntity<Object> addUserAuthority(@PathVariable("username") String username, @RequestBody Map<String, Object> authorities) {
-        try {
-            String authorityName = (String) authorities.get("authority");
-            userService.addAuthority(username, authorityName);
-            return ResponseEntity.ok("Authority added to user: " + username);
-        }
-        catch (Exception ex) {
-            throw new BadRequestException("Could not add authority to user");
-        }
+    @PostMapping("/{id}/authorities")
+    public ResponseEntity<Void> addUserAuthority(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> body) {
+        String authority = (String) body.get("authority");
+        userService.addAuthority(id, authority);
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping(value = "/{username}/authorities/{authority}")
-    public ResponseEntity<Object> deleteUserAuthority(@PathVariable("username") String username, @PathVariable("authority") String authority) {
-        userService.removeAuthority(username, authority);
+    @DeleteMapping("/{id}/authorities/{authority}")
+    public ResponseEntity<Void> removeUserAuthority(
+            @PathVariable Long id,
+            @PathVariable String authority) {
+        userService.removeAuthority(id, authority);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("#username == authentication.name")
-    @PutMapping("/{username}/materials/{materialId}")
+    @PreAuthorize("#user.id == #id")
+    @PutMapping("/{id}/materials/{materialId}")
     public ResponseEntity<Void> assignMaterialToUser(
-            @PathVariable String username,
-            @PathVariable Long materialId) {
-        userService.assignMaterialToUser(username, materialId);
+            @PathVariable Long id,
+            @PathVariable Long materialId,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        userService.assignMaterialToUser(id, materialId);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("#username == authentication.name")
-    @GetMapping("/{username}/materials")
-    public ResponseEntity<List<MaterialResponseDto>> getBookmarkedMaterials(@PathVariable String username) {
-        List<MaterialResponseDto> bookmarkedMaterials = userService.getBookmarkedMaterials(username);
-        return ResponseEntity.ok(bookmarkedMaterials);
+    @PreAuthorize("#user.id == #id")
+    @GetMapping("/{id}/materials")
+    public ResponseEntity<List<MaterialResponseDto>> getBookmarkedMaterials(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        return ResponseEntity.ok(userService.getBookmarkedMaterials(id));
     }
 
-    @PreAuthorize("#username == authentication.name")
-    @DeleteMapping("/{username}/materials/{materialId}")
+    @PreAuthorize("#user.id == #id")
+    @DeleteMapping("/{id}/materials/{materialId}")
     public ResponseEntity<Void> removeMaterialFromUser(
-            @PathVariable String username,
-            @PathVariable Long materialId) {
-        userService.removeMaterialFromUser(username, materialId);
+            @PathVariable Long id,
+            @PathVariable Long materialId,
+            @AuthenticationPrincipal CustomUserDetails user) {
+        userService.removeMaterialFromUser(id, materialId);
         return ResponseEntity.noContent().build();
     }
 

@@ -5,40 +5,44 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@IdClass(AuthorityKey.class)
 @Table(name = "authorities")
-public class Authority implements Serializable {
+public class Authority {
 
     @Id
-    @Column(nullable = false)
-    private String username;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Id
     @Column(nullable = false)
     private String authority;
 
-    public Authority() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    public Authority(String username, String authority) {
-        this.username = username;
+    public Authority() {}
+
+    public Authority(User user, String authority) {
+        this.user = user;
         this.authority = authority;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public Long getId() {
+        return id;
     }
 
     public String getAuthority() {
         return authority;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public void setAuthority(String authority) {
         this.authority = authority;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

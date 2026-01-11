@@ -5,9 +5,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import nl.moreniekmeijer.lessonplatform.config.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.security.Key;
 import java.util.Date;
@@ -29,7 +31,7 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String extractUsername(String token) {
+    public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -51,8 +53,16 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
+        CustomUserDetails cud = (CustomUserDetails) userDetails;
+
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
+        claims.put("email", cud.getUsername());
+        claims.put("roles", cud.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList());
+
+        return createToken(claims, cud.getId().toString());
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -66,7 +76,12 @@ public class JwtUtil {
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        final String subject = extractSubject(token);
+
+        if (userDetails instanceof CustomUserDetails cud) {
+            return subject.equals(cud.getId().toString()) && !isTokenExpired(token);
+        }
+
+        return false;
     }
 }

@@ -10,18 +10,20 @@ import java.util.Set;
 public class User {
 
     @Id
-    @Column(nullable = false, unique = true)
-    private String username;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
     @Column(nullable = false)
     private String password;
 
     @OneToMany(
-            targetEntity = Authority.class,
-            mappedBy = "username",
+            mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER)
@@ -30,7 +32,7 @@ public class User {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "users_materials",
-            joinColumns = @JoinColumn(name = "username"),
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "materials_id")
     )
     private Set<Material> bookmarkedMaterials = new HashSet<>();
@@ -38,19 +40,20 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email, String password, Set<Authority> authorities) {
-        this.username = username;
+    public User(Long id, String email, String fullName, String password, Set<Authority> authorities) {
+        this.id = id;
         this.email = email;
+        this.fullName = fullName;
         this.password = password;
         this.authorities = authorities;
     }
 
-    public String getUsername() {
-        return username;
+    public Long getId() {
+        return id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -60,6 +63,10 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getFullName() {return fullName;}
+
+    public void setFullName(String fullName) {this.fullName = fullName;}
 
     public String getPassword() {
         return password;
@@ -73,14 +80,14 @@ public class User {
         return authorities;
     }
 
-    public void addAuthority(Authority authority) {
-        this.authorities.add(authority);
+    public void addAuthority(String role) {
+        authorities.add(new Authority(this, role));
     }
 
     public void removeAuthority(Authority authority) {
-        this.authorities.remove(authority);
+        authorities.remove(authority);
+        authority.setUser(null);
     }
-
     public void addMaterial(Material material) {
         bookmarkedMaterials.add(material);
     }

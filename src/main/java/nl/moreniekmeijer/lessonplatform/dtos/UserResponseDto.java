@@ -7,20 +7,21 @@ import java.util.Set;
 
 public class UserResponseDto {
 
-    private String username;
+    private Long id;
     private String email;
+    private String fullName;
     @JsonSerialize
-    private Set<Authority> authorities;
+    private Set<String> authorities;
 
     public UserResponseDto() {
     }
 
-    public String getUsername() {
-        return username;
+    public Long getId() {
+        return id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -31,11 +32,19 @@ public class UserResponseDto {
         this.email = email;
     }
 
-    public Set<Authority> getAuthorities() {
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public Set<String> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(Set<Authority> authorities) {
+    public void setAuthorities(Set<String> authorities) {
         this.authorities = authorities;
     }
 }

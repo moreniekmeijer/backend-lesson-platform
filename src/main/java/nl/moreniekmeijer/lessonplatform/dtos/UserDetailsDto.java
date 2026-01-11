@@ -5,17 +5,17 @@ import nl.moreniekmeijer.lessonplatform.models.Authority;
 import java.util.Set;
 
 public class UserDetailsDto {
-    private String username;
+    private String email;
     private String password;
-    private Set<Authority> authorities;
+    private Set<String> authorities;
 
-    public UserDetailsDto(String username, String password, Set<Authority> authorities) {
-        this.username = username;
+    public UserDetailsDto(String email, String password, Set<String> authorities) {
+        this.email = email;
         this.password = password;
         this.authorities = authorities;
     }
 
-    public String getUsername() { return username; }
+    public String getEmail() { return email; }
     public String getPassword() { return password; }
-    public Set<Authority> getAuthorities() { return authorities; }
+    public Set<String> getAuthorities() { return authorities; }
 }
