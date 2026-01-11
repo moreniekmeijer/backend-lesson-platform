@@ -48,6 +48,7 @@ public class SpringSecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .authorizeHttpRequests(auth -> auth
+                                .requestMatchers("/internal/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/forgot-password").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users/reset-password").permitAll()
@@ -55,7 +56,6 @@ public class SpringSecurityConfig {
                                 .requestMatchers("/users/**").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/**").authenticated()
                                 .requestMatchers("/**").hasRole("ADMIN")
-                                .requestMatchers("/convert").permitAll()
                                 .anyRequest().denyAll()
 //                                .anyRequest().permitAll()
                 )

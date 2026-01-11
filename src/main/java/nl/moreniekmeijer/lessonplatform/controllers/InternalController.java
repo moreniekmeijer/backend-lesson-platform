@@ -21,16 +21,25 @@ public class InternalController {
 
     @PostMapping("/process-video")
     public ResponseEntity<String> processVideo(@RequestBody Map<String, Object> payload) {
+        System.out.println("[Controller] Received payload: " + payload);
+
+        if (!payload.containsKey("materialId") || !payload.containsKey("objectName")) {
+            return ResponseEntity.badRequest().body("Missing 'materialId' or 'objectName'");
+        }
+
         try {
             Long materialId = Long.valueOf(payload.get("materialId").toString());
             String objectName = payload.get("objectName").toString();
 
-            videoProcessingService.processSync(materialId, objectName);
+            videoProcessingService.processBlocking(materialId, objectName);
 
             return ResponseEntity.ok("Processed");
+
+        } catch (NumberFormatException e) {
+            return ResponseEntity.badRequest().body("Invalid 'materialId'");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Failed");
+            return ResponseEntity.status(500).body("Failed: " + e.getMessage());
         }
     }
 }
