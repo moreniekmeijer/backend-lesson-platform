@@ -18,7 +18,7 @@ public class StyleController {
 
     private final StyleService styleService;
 
-    public StyleController(StyleService styleService, MaterialService materialService) {
+    public StyleController(StyleService styleService) {
         this.styleService = styleService;
     }
 

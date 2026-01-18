@@ -223,7 +223,7 @@ public class UserService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
         message.setSubject("Reset je wachtwoord");
-        message.setText("Hallo " + user.getId() + ",\n\n"
+        message.setText("Hallo " + user.getFullName() + ",\n\n"
                 + "Je kunt je wachtwoord resetten via deze link:\n"
                 + resetLink + "\n\n"
                 + "Deze link is 15 minuten geldig.\n\n");
@@ -231,6 +231,7 @@ public class UserService {
         mailSender.send(message);
     }
 
+    @Transactional
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Ongeldig of verlopen token."));

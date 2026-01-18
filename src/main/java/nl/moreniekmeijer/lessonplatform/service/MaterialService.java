@@ -11,7 +11,6 @@ import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.models.User;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
-import nl.moreniekmeijer.lessonplatform.repositories.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +23,11 @@ public class MaterialService {
     private final MaterialRepository materialRepository;
     private final StyleRepository styleRepository;
     private final FileService fileService;
-    private final UserRepository userRepository;
 
-    public MaterialService(MaterialRepository materialRepository, StyleRepository styleRepository, FileService fileService, UserRepository userRepository) {
+    public MaterialService(MaterialRepository materialRepository, StyleRepository styleRepository, FileService fileService) {
         this.materialRepository = materialRepository;
         this.styleRepository = styleRepository;
         this.fileService = fileService;
-        this.userRepository = userRepository;
     }
 
     public MaterialResponseDto addMaterial(MaterialInputDto materialInputDto) {
@@ -46,7 +43,7 @@ public class MaterialService {
             Material savedMaterial = materialRepository.save(material);
             return MaterialMapper.toResponseDto(savedMaterial);
         } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("5 The title must be unique. This title already exists.");
+            throw new IllegalArgumentException("The title must be unique. This title already exists.");
         }
     }
 
@@ -121,7 +118,8 @@ public class MaterialService {
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
 
-        material.setFileName(fileNameOrLink);
+        String normalizedValue = normalizeLinkIfNeeded(fileNameOrLink, fileType);
+        material.setFileName(normalizedValue);
 
         if ("arrangement".equalsIgnoreCase(material.getCategory()) && fileType == FileType.PDF) {
             boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
@@ -168,9 +166,12 @@ public class MaterialService {
         return MaterialMapper.toResponseDto(updated);
     }
 
-//    public void ensureExists(Long id) {
-//        if (!materialRepository.existsById(id)) {
-//            throw new EntityNotFoundException("Material not found with id: " + id);
-//        }
-//    }
+    private String normalizeLinkIfNeeded(String value, FileType fileType) {
+        if (fileType == FileType.LINK && value != null) {
+            if (!value.startsWith("http://") && !value.startsWith("https://")) {
+                return "https://" + value;
+            }
+        }
+        return value;
+    }
 }

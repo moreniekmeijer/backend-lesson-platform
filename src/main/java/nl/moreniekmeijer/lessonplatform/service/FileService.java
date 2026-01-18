@@ -26,7 +26,6 @@ public class FileService {
             @Value("${gcs.credentials.file:}") String credentialsPath
     ) throws IOException {
         this.bucketName = bucketName;
-//        this.storage = StorageOptions.getDefaultInstance().getService();
 
         StorageOptions.Builder optionsBuilder = StorageOptions.newBuilder();
 
@@ -107,7 +106,6 @@ public class FileService {
         }
     }
 
-    /* ------------------- Helpers ------------------- */
     public String getFileExtension(String filename) {
         int lastDot = filename.lastIndexOf('.');
         return (lastDot > 0) ? filename.substring(lastDot + 1) : "";
@@ -122,16 +120,4 @@ public class FileService {
             default -> throw new IllegalArgumentException("Unsupported file type: " + ext);
         };
     }
-
-//    public String getMimeTypeFromFilename(String filename) {
-//        String ext = getFileExtension(filename).toLowerCase();
-//        return switch (ext) {
-//            case "pdf" -> "application/pdf";
-//            case "mp4" -> "video/mp4";
-//            case "mov" -> "video/quicktime";
-//            case "jpg", "jpeg" -> "image/jpeg";
-//            case "png" -> "image/png";
-//            default -> "application/octet-stream";
-//        };
-//    }
 }

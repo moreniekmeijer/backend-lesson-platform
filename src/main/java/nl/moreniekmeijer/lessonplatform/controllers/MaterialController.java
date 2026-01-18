@@ -36,10 +36,6 @@ public class MaterialController {
         this.videoProcessingService = videoProcessingService;
     }
 
-    /**
-     * Create a material (metadata) and optionally return a signed upload URL.
-     * Frontend can upload the file directly to GCS using the returned uploadUrl.
-     */
     @PostMapping
     public ResponseEntity<Map<String, Object>> addMaterialWithUpload(
             @Valid @RequestBody MaterialInputDto materialInputDto,
