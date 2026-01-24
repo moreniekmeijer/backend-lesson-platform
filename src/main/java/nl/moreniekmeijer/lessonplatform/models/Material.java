@@ -20,7 +20,14 @@ public class Material {
     @Enumerated(EnumType.STRING)
     private FileType fileType;
     private String fileName;
-    private String instrument;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "material_instruments",
+            joinColumns = @JoinColumn(name = "material_id")
+    )
+    @Column(name = "instrument")
+    private Set<String> instruments = new HashSet<>();
     private String category;
 
     @ManyToOne
@@ -35,12 +42,12 @@ public class Material {
     public Material() {
     }
 
-    public Material(Long id, String title, FileType fileType, String fileName, String instrument, String category, Style style) {
+    public Material(Long id, String title, FileType fileType, String fileName, Set<String> instruments, String category, Style style) {
         this.id = id;
         this.title = title;
         this.fileType = fileType;
         this.fileName = fileName;
-        this.instrument = instrument;
+        this.instruments = instruments;
         this.category = category;
         this.style = style;
     }
@@ -77,13 +84,9 @@ public class Material {
         this.fileName = fileName;
     }
 
-    public String getInstrument() {
-        return instrument;
-    }
+    public Set<String> getInstruments() {return instruments;}
 
-    public void setInstrument(String instrument) {
-        this.instrument = instrument;
-    }
+    public void setInstruments(Set<String> instruments) {this.instruments = instruments;}
 
     public String getCategory() {
         return category;

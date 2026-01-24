@@ -3,12 +3,14 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Set;
+
 public class MaterialInputDto {
 
     @NotBlank(message = "Title is required")
     private String title;
 
-    private String instrument;
+    private Set<String> instruments;
 
     private String category;
 
@@ -23,12 +25,12 @@ public class MaterialInputDto {
         this.title = title;
     }
 
-    public String getInstrument() {
-        return instrument;
+    public Set<String> getInstruments() {
+        return instruments;
     }
 
-    public void setInstrument(String instrument) {
-        this.instrument = instrument;
+    public void setInstruments(Set<String> instruments) {
+        this.instruments = instruments;
     }
 
     public String getCategory() {

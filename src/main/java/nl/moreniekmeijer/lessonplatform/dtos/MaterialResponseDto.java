@@ -2,13 +2,15 @@ package nl.moreniekmeijer.lessonplatform.dtos;
 
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 
+import java.util.Set;
+
 public class MaterialResponseDto {
 
     private Long id;
     private String title;
     private FileType fileType;
     private String fileLink;
-    private String instrument;
+    private Set<String> instruments;
     private String category;
     private String styleName;
     private String origin;
@@ -45,12 +47,12 @@ public class MaterialResponseDto {
         this.fileLink = fileLink;
     }
 
-    public String getInstrument() {
-        return instrument;
+    public Set<String> getInstruments() {
+        return instruments;
     }
 
-    public void setInstrument(String instrument) {
-        this.instrument = instrument;
+    public void setInstruments(Set<String> instruments) {
+        this.instruments = instruments;
     }
 
     public String getCategory() {

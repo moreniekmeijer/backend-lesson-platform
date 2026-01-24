@@ -67,7 +67,13 @@ public class MaterialService {
         }
 
         if (instrument != null && !instrument.isEmpty()) {
-            foundMaterials = foundMaterials.stream().filter(m -> m.getInstrument().equals(instrument)).toList();
+            foundMaterials = foundMaterials.stream()
+                    .filter(m ->
+                            m.getInstruments() != null &&
+                                    m.getInstruments().stream()
+                                            .anyMatch(i -> i.equalsIgnoreCase(instrument))
+                    )
+                    .toList();
         }
 
         if (category != null && !category.isEmpty()) {
