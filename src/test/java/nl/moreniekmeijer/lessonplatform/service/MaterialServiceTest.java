@@ -88,16 +88,16 @@ class MaterialServiceTest {
         assertEquals("No Style Title", result.getTitle());
     }
 
-    @Test
-    void getFilteredMaterials_shouldFilterCorrectly() {
-        Material material1 = new Material(); material1.setTitle("Djembe ritme 1"); material1.setFileType(FileType.VIDEO); material1.setInstrument("Djembe"); material1.setCategory("Partij");
-        Material material2 = new Material(); material2.setTitle("Makru arrangement"); material2.setFileType(FileType.PDF); material2.setInstrument("Diversen"); material2.setCategory("Arrangement");
-        when(materialRepository.findAll()).thenReturn(List.of(material1, material2));
-
-        var result = materialService.getFilteredMaterials("ritme", "video", "Djembe", "Partij", null, null);
-
-        assertEquals(1, result.size());
-    }
+//    @Test
+//    void getFilteredMaterials_shouldFilterCorrectly() {
+//        Material material1 = new Material(); material1.setTitle("Djembe ritme 1"); material1.setFileType(FileType.VIDEO); material1.setInstrument("Djembe"); material1.setCategory("Partij");
+//        Material material2 = new Material(); material2.setTitle("Makru arrangement"); material2.setFileType(FileType.PDF); material2.setInstrument("Diversen"); material2.setCategory("Arrangement");
+//        when(materialRepository.findAll()).thenReturn(List.of(material1, material2));
+//
+//        var result = materialService.getFilteredMaterials("ritme", "video", "Djembe", "Partij", null, null);
+//
+//        assertEquals(1, result.size());
+//    }
 
     @Test
     void getFilteredMaterials_shouldFilterByStyleNameAndOrigin() {

@@ -21,7 +21,7 @@ public class Material {
     private FileType fileType;
     private String fileName;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "material_instruments",
             joinColumns = @JoinColumn(name = "material_id")

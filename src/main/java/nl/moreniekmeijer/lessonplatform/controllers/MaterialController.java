@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -92,7 +91,7 @@ public class MaterialController {
     public ResponseEntity<MaterialResponseDto> confirmUpload(
             @PathVariable Long id,
             @RequestBody Map<String, String> payload
-    ) throws Exception {
+    ) {
         String objectName = payload.get("objectName");
         FileType fileType = FileType.valueOf(payload.get("fileType"));
 
@@ -125,7 +124,7 @@ public class MaterialController {
     public ResponseEntity<MaterialResponseDto> addLinkToMaterial(
             @PathVariable Long id,
             @Valid @RequestBody LinkInputDto linkInputDto
-    ) throws IOException {
+    ) {
         String link = linkInputDto.getLink();
         MaterialResponseDto savedMaterial = materialService.assignToMaterial(link, id, FileType.LINK);
         return ResponseEntity.ok(savedMaterial);

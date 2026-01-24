@@ -1,7 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.MaterialMapper;
@@ -47,6 +47,7 @@ public class MaterialService {
         }
     }
 
+    @Transactional(readOnly = true)
     public List<MaterialResponseDto> getFilteredMaterials(
             String search, String fileType, String instrument,
             String category, String styleName, String origin

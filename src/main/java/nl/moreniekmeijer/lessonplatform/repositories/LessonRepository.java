@@ -11,8 +11,6 @@ import org.springframework.data.repository.query.Param;
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
     List<Lesson> findAllByOrderByScheduledDateTimeAsc();
 
-    List<Lesson> findAllByScheduledDateTimeAfterOrderByScheduledDateTimeAsc(LocalDateTime now);
-
     @Query("""
     SELECT l FROM Lesson l 
     WHERE :role MEMBER OF l.allowedRoles 

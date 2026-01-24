@@ -20,8 +20,6 @@ public class VideoProcessingService {
     }
 
     public void processBlocking(Long materialId, String objectName) {
-        System.out.println("[VideoProcessing] Starting for " + objectName);
-
         File tempMov = null;
         File tempMp4 = null;
 
@@ -34,19 +32,15 @@ public class VideoProcessingService {
                 return;
             }
             blob.downloadTo(tempMov.toPath());
-            System.out.println("[VideoProcessing] MOV downloaded: " + tempMov.getAbsolutePath());
 
             tempMp4 = convertMovToMp4(tempMov);
-            System.out.println("[VideoProcessing] Conversion finished: " + tempMp4.getAbsolutePath());
 
             String mp4ObjectName = objectName.replaceFirst("(?i)\\.mov$", "") + "_compressed.mp4";
             fileService.uploadFile(tempMp4, mp4ObjectName, "video/mp4");
-            System.out.println("[VideoProcessing] MP4 uploaded as " + mp4ObjectName);
 
             materialService.replaceMaterialFile(materialId, mp4ObjectName, FileType.VIDEO);
 
             fileService.deleteFile(objectName);
-            System.out.println("[VideoProcessing] MOV deleted, DB updated");
 
         } catch (Exception e) {
             System.err.println("[VideoProcessing] Failed for " + objectName);

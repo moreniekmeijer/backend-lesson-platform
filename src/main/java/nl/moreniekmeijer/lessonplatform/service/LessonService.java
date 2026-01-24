@@ -80,28 +80,21 @@ public class LessonService {
         LocalDateTime now = LocalDateTime.now();
         Set<String> userRoles = getCurrentUserRoles();
 
-        // Admin wordt behandeld alsof hij beide groepen heeft
         if (userRoles.contains("ROLE_ADMIN")) {
             userRoles = Set.of("ROLE_GROUP_1", "ROLE_GROUP_2");
         }
 
-        // Filter alleen groepsrollen
         List<String> groupRoles = userRoles.stream()
                 .filter(r -> r.startsWith("ROLE_GROUP_"))
                 .toList();
 
         if (groupRoles.isEmpty()) {
-            throw new EntityNotFoundException("Geen lessen beschikbaar voor jouw groep.");
+            return List.of();
         }
 
-        // Vind per groep de eerstvolgende les en verzamel ze
         List<Lesson> lessons = groupRoles.stream()
                 .flatMap(role -> lessonRepository.findNextLessonsForRole(role, now).stream().limit(1))
                 .toList();
-
-        if (lessons.isEmpty()) {
-            throw new EntityNotFoundException("Geen lessen gevonden voor jouw groepen.");
-        }
 
         return lessons.stream()
                 .map(LessonMapper::toResponseDto)
