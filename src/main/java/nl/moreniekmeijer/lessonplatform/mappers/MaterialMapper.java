@@ -5,13 +5,16 @@ import nl.moreniekmeijer.lessonplatform.dtos.MaterialResponseDto;
 import nl.moreniekmeijer.lessonplatform.models.FileType;
 import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
+import nl.moreniekmeijer.lessonplatform.utils.FileServiceHolder;
 
 public class MaterialMapper {
 
-    private static final String DEFAULT_BASE_URL = "http://localhost:8080";
-    private static final String BASE_URL = System.getenv("BASE_URL") != null
-            ? System.getenv("BASE_URL")
-            : DEFAULT_BASE_URL;
+//    private static final String DEFAULT_BASE_URL = "http://localhost:8080";
+//    private static final String BASE_URL = System.getenv("BASE_URL") != null
+//            ? System.getenv("BASE_URL")
+//            : DEFAULT_BASE_URL;
+
+//    TODO: get BASE_URL out of Google Variables
 
     public static Material toEntity(MaterialInputDto dto, Style style) {
         Material material = new Material();
@@ -34,10 +37,24 @@ public class MaterialMapper {
 
         if (material.getFileType() == FileType.LINK) {
             responseDto.setFileLink(material.getFileName());
+            responseDto.setDownloadLink(null);
         } else if (material.getFileName() != null) {
-            responseDto.setFileLink(BASE_URL + "/materials/" + material.getId() + "/file");
+            String viewUrl = FileServiceHolder.generateSignedUrl(
+                    material.getFileName(),
+                    false,
+                    material.getTitle()
+            );
+            responseDto.setFileLink(viewUrl);
+
+            String downloadUrl = FileServiceHolder.generateSignedUrl(
+                    material.getFileName(),
+                    true,
+                    material.getTitle()
+            );
+            responseDto.setDownloadLink(downloadUrl);
         } else {
             responseDto.setFileLink(null);
+            responseDto.setDownloadLink(null);
         }
 
         return responseDto;

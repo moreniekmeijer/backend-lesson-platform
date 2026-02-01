@@ -9,7 +9,6 @@ import nl.moreniekmeijer.lessonplatform.service.FileService;
 import nl.moreniekmeijer.lessonplatform.service.MaterialService;
 import nl.moreniekmeijer.lessonplatform.service.VideoProcessingService;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import org.springframework.http.HttpHeaders;
 
 @RestController
 @RequestMapping("/materials")
@@ -103,21 +100,6 @@ public class MaterialController {
         }
 
         return ResponseEntity.ok(material);
-    }
-
-    @GetMapping("/{id}/file")
-    public ResponseEntity<Void> getFile(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "view") String action
-    ) {
-        String signedUrl = materialService.getSignedUrlForMaterial(id, action);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.LOCATION, signedUrl);
-
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .headers(headers)
-                .build();
     }
 
     @PostMapping("/{id}/link")

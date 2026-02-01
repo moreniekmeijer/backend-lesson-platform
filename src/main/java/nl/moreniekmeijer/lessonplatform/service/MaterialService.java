@@ -145,23 +145,6 @@ public class MaterialService {
     }
 
     @Transactional
-    public String getSignedUrlForMaterial(Long id, String action) {
-        Material material = materialRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + id));
-
-        if (material.getFileType() == FileType.LINK) {
-            throw new IllegalStateException("Cannot get signed URL for LINK type material.");
-        }
-
-        if (material.getFileName() == null) {
-            throw new IllegalStateException("No file name stored for this material.");
-        }
-
-        boolean download = "download".equalsIgnoreCase(action);
-        return fileService.generateSignedUrl(material.getFileName(), download, material.getTitle());
-    }
-
-    @Transactional
     public MaterialResponseDto replaceMaterialFile(Long materialId, String newObjectName, FileType fileType) {
         Material material = materialRepository.findById(materialId)
                 .orElseThrow(() -> new EntityNotFoundException("Material not found with id: " + materialId));
@@ -169,8 +152,8 @@ public class MaterialService {
         material.setFileName(newObjectName);
         material.setFileType(fileType);
 
-        Material updated = materialRepository.save(material);
-        return MaterialMapper.toResponseDto(updated);
+        Material updatedMaterial = materialRepository.save(material);
+        return MaterialMapper.toResponseDto(updatedMaterial);
     }
 
     private String normalizeLinkIfNeeded(String value, FileType fileType) {

@@ -10,6 +10,7 @@ public class MaterialResponseDto {
     private String title;
     private FileType fileType;
     private String fileLink;
+    private String downloadLink;
     private Set<String> instruments;
     private String category;
     private String styleName;
@@ -45,6 +46,14 @@ public class MaterialResponseDto {
 
     public void setFileLink(String fileLink) {
         this.fileLink = fileLink;
+    }
+
+    public String getDownloadLink() {
+        return downloadLink;
+    }
+
+    public void setDownloadLink(String downloadLink) {
+        this.downloadLink = downloadLink;
     }
 
     public Set<String> getInstruments() {

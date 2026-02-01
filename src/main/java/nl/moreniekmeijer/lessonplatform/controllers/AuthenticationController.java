@@ -46,6 +46,7 @@ public class AuthenticationController {
         this.userService = userService;
     }
 
+//    TODO: make .secure use global variable
     private ResponseEntity<AuthenticationResponse> createAuthResponse(
             UserDetails userDetails,
             HttpServletResponse response) {
@@ -55,7 +56,7 @@ public class AuthenticationController {
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true) // true in productie
+                .secure(false) // true in productie
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ofDays(14))
@@ -149,7 +150,7 @@ public class AuthenticationController {
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(true) // true in productie
+                .secure(false) // true in productie
                 .path("/")
                 .maxAge(0)
                 .sameSite("Lax")
