@@ -31,8 +31,11 @@ import java.time.Duration;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    @Value("${app.cookie.secure}")
+    @Value("${app.cookie.secure:true}")
     private boolean secureCookie;
+
+    @Value("${app.cookie.same-site:None}")
+    private String sameSiteCookie;
 
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
@@ -61,7 +64,7 @@ public class AuthenticationController {
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(secureCookie)
-                .sameSite("Lax")
+                .sameSite(sameSiteCookie)
                 .path("/")
                 .maxAge(Duration.ofDays(14))
                 .build();
@@ -157,7 +160,7 @@ public class AuthenticationController {
                 .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite(sameSiteCookie)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
