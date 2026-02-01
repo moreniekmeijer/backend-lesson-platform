@@ -11,6 +11,7 @@ import nl.moreniekmeijer.lessonplatform.service.CustomUserDetailsService;
 import nl.moreniekmeijer.lessonplatform.service.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
 import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -29,6 +30,9 @@ import java.time.Duration;
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
+
+    @Value("${app.cookie.secure}")
+    private boolean secureCookie;
 
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
@@ -56,7 +60,7 @@ public class AuthenticationController {
 
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false) // true in productie
+                .secure(secureCookie)
                 .sameSite("Lax")
                 .path("/")
                 .maxAge(Duration.ofDays(14))
@@ -150,7 +154,7 @@ public class AuthenticationController {
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false) // true in productie
+                .secure(secureCookie)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Lax")
