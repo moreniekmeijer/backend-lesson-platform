@@ -1,5 +1,6 @@
 package nl.moreniekmeijer.lessonplatform.filter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,8 +45,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
 
-            String subject = jwtUtil.extractSubject(jwtToken);
-            userId = Long.parseLong(subject);
+            try {
+                String subject = jwtUtil.extractSubject(jwtToken);
+                userId = Long.parseLong(subject);
+            } catch (ExpiredJwtException e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\":\"Token expired\"}");
+                return;
+            } catch (Exception e) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\":\"Invalid token\"}");
+                return;
+            }
         }
 
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -53,7 +64,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             UserDetails userDetails =
                     customUserDetailsService.loadUserByUserId(userId);
 
-            if (jwtUtil.validateToken(jwtToken, userDetails)) {
+            if (jwtUtil.validateAccessToken(jwtToken, userDetails)) {
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(

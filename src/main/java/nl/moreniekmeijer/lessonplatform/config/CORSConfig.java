@@ -17,6 +17,7 @@ public class CORSConfig
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173", "https://frontend-lesson-platform.netlify.app", "https://percussieplatform.moreniekmeijer.nl")
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                        .allowCredentials(true)
                         .allowedHeaders("*")
                         .exposedHeaders("*");
             }

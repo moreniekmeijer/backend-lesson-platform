@@ -1,53 +1,168 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import nl.moreniekmeijer.lessonplatform.config.CustomUserDetails;
 import nl.moreniekmeijer.lessonplatform.dtos.AuthenticationRequest;
 import nl.moreniekmeijer.lessonplatform.dtos.AuthenticationResponse;
+import nl.moreniekmeijer.lessonplatform.dtos.UserRegistrationDto;
+import nl.moreniekmeijer.lessonplatform.dtos.UserResponseDto;
+import nl.moreniekmeijer.lessonplatform.service.CustomUserDetailsService;
+import nl.moreniekmeijer.lessonplatform.service.UserService;
 import nl.moreniekmeijer.lessonplatform.utils.JwtUtil;
+import nl.moreniekmeijer.lessonplatform.utils.URIUtil;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.time.Duration;
+
 @RestController
+@RequestMapping("/auth")
 public class AuthenticationController {
 
-    public AuthenticationManager authenticationManager;
-    public UserDetailsService userDetailsService;
-    public JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
+    private final UserService userService;
 
-    public AuthenticationController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, JwtUtil jwtUtil) {
+    public AuthenticationController(
+            AuthenticationManager authenticationManager,
+            CustomUserDetailsService userDetailsService,
+            JwtUtil jwtUtil,
+            UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
-    @GetMapping("/authenticated")
-    public ResponseEntity<Object> authenticated(@AuthenticationPrincipal CustomUserDetails user) {
-        return ResponseEntity.ok(user);
+    private ResponseEntity<AuthenticationResponse> createAuthResponse(
+            UserDetails userDetails,
+            HttpServletResponse response) {
+
+        String accessToken = jwtUtil.generateAccessToken(userDetails);
+        String refreshToken = jwtUtil.generateRefreshToken(userDetails);
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true) // true in productie
+                .sameSite("Lax")
+                .path("/")
+                .maxAge(Duration.ofDays(14))
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+
+        return ResponseEntity.ok(new AuthenticationResponse(accessToken));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthenticationResponse> register(
+            @Valid @RequestBody UserRegistrationDto userInputDto,
+            HttpServletResponse response) {
+
+        UserResponseDto savedUser = userService.addUser(userInputDto);
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            savedUser.getEmail(),
+                            userInputDto.getPassword()
+                    )
+            );
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
+
+            ResponseEntity<AuthenticationResponse> authResponse = createAuthResponse(userDetails, response);
+
+            URI location = URIUtil.createResourceUriUser(savedUser.getId());
+            return ResponseEntity
+                    .created(location)
+                    .header(HttpHeaders.SET_COOKIE, authResponse.getHeaders().getFirst(HttpHeaders.SET_COOKIE))
+                    .body(authResponse.getBody());
+
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Auto-authentication failed after registration", e);
+        }
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
-
-        String email = authenticationRequest.getEmail();
-        String password = authenticationRequest.getPassword();
+    public ResponseEntity<AuthenticationResponse> authenticate(
+            @RequestBody AuthenticationRequest authenticationRequest,
+            HttpServletResponse response) {
 
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authenticationRequest.getEmail(),
+                            authenticationRequest.getPassword()
+                    )
+            );
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(
+                    authenticationRequest.getEmail()
+            );
+
+            return createAuthResponse(userDetails, response);
+
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        catch (BadCredentialsException e) {
-            throw new Exception("Invalid username or password", e);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthenticationResponse> refresh(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken) {
+
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        if (!jwtUtil.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
-        final String jwt = jwtUtil.generateToken(userDetails);
+        try {
+            Long userId = Long.valueOf(jwtUtil.extractSubject(refreshToken));
+            UserDetails userDetails = userDetailsService.loadUserByUserId(userId);
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+            String newAccessToken = jwtUtil.generateAccessToken(userDetails);
+
+            return ResponseEntity.ok(new AuthenticationResponse(newAccessToken));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true) // true in productie
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/authenticated")
+    public ResponseEntity<CustomUserDetails> getAuthenticatedUser(
+            @AuthenticationPrincipal CustomUserDetails user) {
+        return ResponseEntity.ok(user);
     }
 }

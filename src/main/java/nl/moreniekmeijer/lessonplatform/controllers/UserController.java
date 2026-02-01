@@ -32,17 +32,17 @@ public class UserController {
         this.jwtUtil = jwtUtil;
     }
 
-    @PostMapping
-    public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody UserRegistrationDto userInputDto) {
-        UserResponseDto savedUser = userService.addUser(userInputDto);
-
-        URI location = URIUtil.createResourceUriUser(savedUser.getId());
-
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        return ResponseEntity.created(location).body(new AuthenticationResponse(jwt));
-    }
+//    @PostMapping
+//    public ResponseEntity<AuthenticationResponse> registerUser(@Valid @RequestBody UserRegistrationDto userInputDto) {
+//        UserResponseDto savedUser = userService.addUser(userInputDto);
+//
+//        URI location = URIUtil.createResourceUriUser(savedUser.getId());
+//
+//        final UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
+//        final String jwt = jwtUtil.generateAccessToken(userDetails);
+//
+//        return ResponseEntity.created(location).body(new AuthenticationResponse(jwt));
+//    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping

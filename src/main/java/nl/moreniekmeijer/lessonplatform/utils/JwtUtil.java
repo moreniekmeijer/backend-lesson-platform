@@ -23,8 +23,11 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+    @Value("${jwt.access-expiration}")
+    private long accessExpirationTime;
+
+    @Value("${jwt.refresh-expiration}")
+    private long refreshExpirationTime;
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -45,27 +48,45 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateAccessToken(UserDetails userDetails) {
         CustomUserDetails cud = (CustomUserDetails) userDetails;
 
         Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "access");
         claims.put("email", cud.getUsername());
         claims.put("roles", cud.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList());
 
-        return createToken(claims, cud.getId().toString());
+        return createToken(claims, cud.getId().toString(), accessExpirationTime);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    public String generateRefreshToken(UserDetails userDetails) {
+        CustomUserDetails cud = (CustomUserDetails) userDetails;
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("type", "refresh");
+
+        return createToken(
+                claims,
+                cud.getId().toString(),
+                refreshExpirationTime
+        );
+    }
+
+    private String createToken(Map<String, Object> claims, String subject, long expirationTime) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -75,13 +96,30 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
+    public Boolean validateAccessToken(String token, UserDetails userDetails) {
         final String subject = extractSubject(token);
 
-        if (userDetails instanceof CustomUserDetails cud) {
-            return subject.equals(cud.getId().toString()) && !isTokenExpired(token);
+        if (!(userDetails instanceof CustomUserDetails cud)) {
+            return false;
         }
 
-        return false;
+        Claims claims = extractAllClaims(token);
+
+        return subject.equals(cud.getId().toString())
+                && "access".equals(claims.get("type"))
+                && !claims.getExpiration().before(new Date());
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            if (!"refresh".equals(claims.get("type"))) {
+                return false;
+            }
+
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
