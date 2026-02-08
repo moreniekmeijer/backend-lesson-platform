@@ -21,6 +21,10 @@ public class Style {
     @Column(length = 1000)
     private String description;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String arrangement;
+
     @ManyToMany(mappedBy = "styles")
     @JsonIgnore
     private List<Lesson> lessons;
@@ -31,11 +35,12 @@ public class Style {
     public Style() {
     }
 
-    public Style(Long id, String name, String origin, String description, List<Lesson> lessons, List<Material> materials) {
+    public Style(Long id, String name, String origin, String description, String arrangement, List<Lesson> lessons, List<Material> materials) {
         this.id = id;
         this.name = name;
         this.origin = origin;
         this.description = description;
+        this.arrangement = arrangement;
         this.lessons = lessons;
         this.materials = materials;
     }
@@ -62,6 +67,14 @@ public class Style {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public String getArrangement() {
+        return arrangement;
+    }
+
+    public void setArrangement(String arrangement) {
+        this.arrangement = arrangement;
     }
 
     public String getDescription() {

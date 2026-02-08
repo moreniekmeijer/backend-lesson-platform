@@ -16,7 +16,7 @@ public class LinkInputDto {
         return link;
     }
 
-    public void setUrl(String link) {
+    public void setLink(String link) {
         this.link = link;
     }
 }

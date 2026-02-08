@@ -128,14 +128,14 @@ public class MaterialService {
         String normalizedValue = normalizeLinkIfNeeded(fileNameOrLink, fileType);
         material.setFileName(normalizedValue);
 
-        if ("arrangement".equalsIgnoreCase(material.getCategory()) && fileType == FileType.PDF) {
-            boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
-                    "arrangement", FileType.PDF, material.getStyle() != null ? material.getStyle().getId() : null);
-
-            if (existsArrangement) {
-                throw new IllegalStateException("Material with fileType 'PDF' and category 'Arrangement' already exists for this style.");
-            }
-        }
+//        if ("arrangement".equalsIgnoreCase(material.getCategory()) && fileType == FileType.PDF) {
+//            boolean existsArrangement = materialRepository.existsByCategoryIgnoreCaseAndFileTypeAndStyleId(
+//                    "arrangement", FileType.PDF, material.getStyle() != null ? material.getStyle().getId() : null);
+//
+//            if (existsArrangement) {
+//                throw new IllegalStateException("Material with fileType 'PDF' and category 'Arrangement' already exists for this style.");
+//            }
+//        }
 
         material.setFileType(fileType);
 

@@ -27,6 +27,7 @@ public class StyleMapper {
         responseDto.setName(style.getName());
         responseDto.setOrigin(style.getOrigin());
         responseDto.setDescription(style.getDescription());
+        responseDto.setArrangement(style.getArrangement());
 
         responseDto.setLessonIds(style.getLessons() != null
                 ? style.getLessons().stream()
@@ -48,13 +49,13 @@ public class StyleMapper {
                         .toList()
         );
 
-        responseDto.setArrangementId(
-                style.getMaterials().stream()
-                        .filter(material -> "arrangement".equalsIgnoreCase(material.getCategory()) && "PDF".equalsIgnoreCase(material.getFileType().name()))
-                        .map(Material::getId)
-                        .findFirst()
-                        .orElse(null)
-        );
+//        responseDto.setArrangementId(
+//                style.getMaterials().stream()
+//                        .filter(material -> "arrangement".equalsIgnoreCase(material.getCategory()) && "PDF".equalsIgnoreCase(material.getFileType().name()))
+//                        .map(Material::getId)
+//                        .findFirst()
+//                        .orElse(null)
+//        );
 
         return responseDto;
     }

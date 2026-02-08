@@ -7,10 +7,11 @@ public class StyleResponseDto {
     private String name;
     private String origin;
     private String description;
+    private String arrangement;
     private List<Long> lessonIds;
     private List<MaterialResponseDto> materials;
     private List<String> links;
-    private Long arrangementId;
+//    private Long arrangementId;
 
     public Long getId() {
         return id;
@@ -44,6 +45,14 @@ public class StyleResponseDto {
         this.description = description;
     }
 
+    public String getArrangement() {
+        return arrangement;
+    }
+
+    public void setArrangement(String arrangement) {
+        this.arrangement = arrangement;
+    }
+
     public List<Long> getLessonIds() {
         return lessonIds;
     }
@@ -68,11 +77,11 @@ public class StyleResponseDto {
         this.links = links;
     }
 
-    public Long getArrangementId() {
-        return arrangementId;
-    }
-
-    public void setArrangementId(Long arrangementId) {
-        this.arrangementId = arrangementId;
-    }
+//    public Long getArrangementId() {
+//        return arrangementId;
+//    }
+//
+//    public void setArrangementId(Long arrangementId) {
+//        this.arrangementId = arrangementId;
+//    }
 }

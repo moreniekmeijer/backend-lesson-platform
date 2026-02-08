@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import nl.moreniekmeijer.lessonplatform.dtos.ArrangementInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.mappers.StyleMapper;
@@ -9,6 +10,8 @@ import nl.moreniekmeijer.lessonplatform.models.Material;
 import nl.moreniekmeijer.lessonplatform.models.Style;
 import nl.moreniekmeijer.lessonplatform.repositories.MaterialRepository;
 import nl.moreniekmeijer.lessonplatform.repositories.StyleRepository;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +62,20 @@ public class StyleService {
         }
 
         styleRepository.delete(foundStyle);
+    }
+
+    @Transactional
+    public void updateArrangement(Long styleId, ArrangementInputDto dto) {
+
+        Style style = styleRepository.findById(styleId)
+                .orElseThrow(() -> new EntityNotFoundException("Style not found with id: " + styleId));
+
+        String safeHtml = Jsoup.clean(
+                dto.getArrangement(),
+                Safelist.relaxed()
+        );
+
+        style.setArrangement(safeHtml);
     }
 
     @Transactional

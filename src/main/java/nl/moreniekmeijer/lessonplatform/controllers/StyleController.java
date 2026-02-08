@@ -1,6 +1,7 @@
 package nl.moreniekmeijer.lessonplatform.controllers;
 
 import jakarta.validation.Valid;
+import nl.moreniekmeijer.lessonplatform.dtos.ArrangementInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleInputDto;
 import nl.moreniekmeijer.lessonplatform.dtos.StyleResponseDto;
 import nl.moreniekmeijer.lessonplatform.service.MaterialService;
@@ -42,6 +43,15 @@ public class StyleController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStyle(@PathVariable Long id) {
         styleService.deleteStyle(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/arrangement")
+    public ResponseEntity<Void> updateArrangement(
+            @PathVariable Long id,
+            @Valid @RequestBody ArrangementInputDto dto
+    ) {
+        styleService.updateArrangement(id, dto);
         return ResponseEntity.noContent().build();
     }
 
